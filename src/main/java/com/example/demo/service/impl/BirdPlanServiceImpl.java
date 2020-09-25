@@ -1,17 +1,21 @@
 package com.example.demo.service.impl;
 
 
+import com.example.demo.entity.biology.Bird.Bird;
 import com.example.demo.entity.biology.Bird.BirdPlan;
+import com.example.demo.entity.params.Page;
 import com.example.demo.repository.Bird.BirdPlanRepository;
 import com.example.demo.repository.Bird.BirdRepository;
 import com.example.demo.service.BirdPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class BirdPlanServiceImpl implements BirdPlanService {
 
     @Autowired
@@ -107,5 +111,35 @@ public class BirdPlanServiceImpl implements BirdPlanService {
     @Override
     public void deleteById(Long id) {
         birdPlanRepository.deleteById(id);
+    }
+
+    @Override
+    public void save(BirdPlan birdPlan) {
+        Long bid=1L;
+        if(birdPlanRepository.maxId()!=null){
+            bid=birdPlanRepository.maxId()+1;
+        }
+        birdPlan.setBid(bid);
+        birdPlan.setChineseName(birdPlan.getBird().getChineseName());
+        birdPlan.setLatinName(birdPlan.getBird().getProfessorName());
+        birdPlanRepository.save(birdPlan.getBid(),birdPlan.getPlanName(),birdPlan.getChineseName(),birdPlan.getLatinName(),birdPlan.getBirdCount(),birdPlan.getWatchCount(),
+                birdPlan.getLindex(),birdPlan.getPindex(),birdPlan.getOther(),birdPlan.getBird().getBid());
+    }
+
+    @Override
+    public void update(BirdPlan birdPlan) {
+        birdPlanRepository.save(birdPlan);
+    }
+
+    @Override
+    public Page<BirdPlan> findPage(int pageNum, int pageSize) {
+        List<BirdPlan> birds= birdPlanRepository.findPage(pageSize,pageNum*pageSize-pageSize);
+        Page<BirdPlan> birdPage=new Page<>();
+        birdPage.setPageNum(pageNum);
+        birdPage.setPageSize(pageSize);
+        birdPage.setContent(birds);
+        birdPage.setTotalElements(birdPlanRepository.findCount());
+        birdPage.setTotalPages((int)Math.ceil(birdPage.getTotalElements()/pageSize));
+        return birdPage;
     }
 }

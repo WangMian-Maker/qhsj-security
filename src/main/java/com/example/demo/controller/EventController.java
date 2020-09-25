@@ -33,9 +33,8 @@ public class EventController {
     private EventServiceImpl eventService;
 
     @PostMapping("/uploadEvent")
-    public String upload(@RequestPart("event") String event, @RequestPart("photoFile") List<MultipartFile> photoFiles, @RequestPart("videoFile") List<MultipartFile> videoFiles){
-        eventService.uploadEvent(event,photoFiles,videoFiles);
-        return "success";
+    public Long upload(@RequestPart("event") String event, @RequestPart("photoFile") List<MultipartFile> photoFiles, @RequestPart("videoFile") List<MultipartFile> videoFiles){
+        return eventService.uploadEvent(event,photoFiles,videoFiles);
     }
 
     @PostMapping("/findPhotoPathsById/{id}")
@@ -122,4 +121,41 @@ public class EventController {
     public List<Integer> findCountInFindPersonByToken(){
         return eventService.findCountInFindPersonByToken();
     }
+
+    @PostMapping("/setDepartment/{did}/{eid}")
+    public String setDepartment(@PathVariable("did")Long did,@PathVariable("eid")Long eid){
+        eventService.setDepartment(did,eid);
+        return "success";
+    }
+
+    @PostMapping("/setChargePerson/{staffId}/{eid}")
+    public String setChargePerson(@PathVariable("staffId")Long staffId,@PathVariable("eid")Long eid){
+        eventService.setChargePerson(staffId,eid);
+        return "success";
+    }
+
+    @PostMapping("/setFindPerson/{staffId}/{eid}")
+    public String setFindPerson(@PathVariable("staffId")Long staffId,@PathVariable("eid")Long eid){
+        eventService.setFindPerson(staffId,eid);
+        return "success";
+    }
+
+    @PostMapping("/setDealPerson/{staffId}/{eid}")
+    public String setDealPerson(@PathVariable("staffId")Long staffId,@PathVariable("eid")Long eid){
+        eventService.setDealPerson(staffId,eid);
+        return "success";
+    }
+
+    @PostMapping("/setOperationPerson/{staffId}/{eid}")
+    public String setOperationPerson(@PathVariable("staffId")Long staffId,@PathVariable("eid")Long eid){
+        eventService.setOperationPerson(staffId,eid);
+        return "success";
+    }
+
+    @PostMapping("/setTask/{tid}/{eid}")
+    public String setTask(@PathVariable("tid")Long tid,@PathVariable("eid")Long eid){
+        eventService.setTask(tid,eid);
+        return "success";
+    }
+
 }

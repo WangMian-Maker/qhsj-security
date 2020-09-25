@@ -1,25 +1,21 @@
-package com.example.demo.entity.biology.Bird;
+package com.example.demo.entity.biology;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import lombok.Data;
-
-import javax.persistence.*;
-@Entity
-@Data
-public class Bird {
+public class Zoobenthos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long bid;
+    public Long zid;
     public String chineseName;
     public String professorName;
     public String color1;
-    private String protectGrade;
+
     public String family;//科
     public String familyEnglish;
     public String color2;
     public String orderVice;// 目
     public String orderViceEnglish;
     public String color3;
-    private String information;
-    private String existInformation;
 }

@@ -3,10 +3,10 @@ package com.example.demo.controller;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
+import com.example.demo.entity.params.Page;
 import com.example.demo.entity.params.TaskParam1;
 import com.example.demo.service.impl.TaskServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,9 +22,7 @@ public class TaskController {
     private HttpServletRequest request;
     @PostMapping("/create")
     public String create(@RequestBody Task task){
-        String[] tmp1=request.getHeader("Authorization").split(" ");
-        String token=tmp1[1];
-        taskService.createTask(task,token);
+        taskService.createTask(task);
         return "success";
     }
 
@@ -52,8 +50,7 @@ public class TaskController {
 
     @DeleteMapping("/deleteById/{id}")
     public String deleteById(@PathVariable("id") Long id){
-        taskService.deleteById(id);
-        return "success";
+        return taskService.deleteById(id);
     }
 
     @PostMapping("/findPage/{pageNum}/{pageSize}")
@@ -62,7 +59,7 @@ public class TaskController {
     }
 
     @PostMapping("/findAllEvent/{tid}")
-    public List<Event> addEvent(@PathVariable("tid") Long tid){
+    public List<Event> findAllEvent(@PathVariable("tid") Long tid){
 
         return taskService.findAllEvents(tid);
     }
@@ -73,7 +70,7 @@ public class TaskController {
     }
 
     @PostMapping("/findPageByTokenAndStatus")
-    public List<Task> findPageByTokenAndStatus(@RequestBody TaskParam1 taskParam1){
+    public Page<Task> findPageByTokenAndStatus(@RequestBody TaskParam1 taskParam1){
         return taskService.findPageTaskBelongStaffByTokenAndStatus(taskParam1.getPageNum(),taskParam1.getPageSize(),taskParam1.getStatus());
     }
     @PostMapping("/findCountByTokenAndStatus")

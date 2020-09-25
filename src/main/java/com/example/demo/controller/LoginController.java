@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.config.utils.JwtTokenUtils;
+import com.example.demo.entity.LoginInfor;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.user.Login;
 import com.example.demo.entity.user.SysUser;
@@ -24,6 +25,11 @@ public class LoginController {
     @PostMapping("myLogin")
     public String GetToken(@RequestBody Login login){
         return loginService.getToken(login);
+    }
+
+    @PostMapping("haoLogin")
+    public LoginInfor GetHaoToken(@RequestBody Login login){
+        return loginService.getTokenEntity(login);
     }
 
     @PostMapping("/data/getStaffInforByToken")

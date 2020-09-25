@@ -18,7 +18,7 @@ public class Event {
     private String eventGrade;
     //private String department;
     private String position;
-    private String chargePerson;
+    //private String chargePerson;
     private String photoPath;
     private String videoPath;
     private String status;
@@ -33,14 +33,16 @@ public class Event {
     private String blackList;
     private String influence;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Department department;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private StaffInfor chargePerson;
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private StaffInfor findPerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private StaffInfor dealPerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private StaffInfor operationPerson;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Task task;
 }

@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
 
+import com.example.demo.entity.Department;
+import com.example.demo.entity.StaffInfor;
+import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
@@ -15,7 +18,7 @@ import java.util.List;
 
 
 public interface EventService {
-    public void uploadEvent(String eventStr, List<MultipartFile> photoFiles, List<MultipartFile> videoFiles);
+    public Long uploadEvent(String eventStr, List<MultipartFile> photoFiles, List<MultipartFile> videoFiles);
     public List<String> findPhotoFilePathById(Long id);
     public List<String> findVideoFilePathById(Long id);
     public Page<Event> findPage(int pageNum,int pageSize);
@@ -30,4 +33,17 @@ public interface EventService {
     public List<Event> findByFindPersonAndStatus(String status);
     public List<Integer> findCountInTask(Long tid);
     public List<Integer> findCountInFindPersonByToken();
+    public void setDepartment(Department department,Long eid);
+    public void setChargePerson(StaffInfor staffInfor,Long eid);
+    public void setFindPerson(StaffInfor staffInfor,Long eid);
+    public void setDealPerson(StaffInfor staffInfor,Long eid);
+    public void setOperationPerson(StaffInfor staffInfor,Long eid);
+    public void setTask(Task task,Long eid);
+
+    public void setDepartment(Long did,Long eid);
+    public void setChargePerson(Long staffId,Long eid);
+    public void setFindPerson(Long staffId,Long eid);
+    public void setDealPerson(Long staffId,Long eid);
+    public void setOperationPerson(Long staffId,Long eid);
+    public void setTask(Long tid,Long eid);
 }

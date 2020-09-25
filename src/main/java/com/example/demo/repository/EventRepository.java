@@ -44,16 +44,16 @@ public interface EventRepository extends JpaRepository<Event,Long> {
     public Long maxId();
     public Event findByeid(Long eid);
     @Modifying
-    @Query(value = "insert into event(eid,event_index,event_type,event_grade,department_did,position,charge_person,photo_path,video_path,status,event_source,find_time,information" +
-            ",find_person_staff_id,deal_person_staff_id,deal_time,deal_result,operation_person_staff_id,black_list,influence,task_tid) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21)",nativeQuery = true)
-    public void save(Long eid,String eventIndex,String eventType, String eventGrade,Long departmentDid,String position,String chargePerson,String photoPath,
-                     String videoPath,String status,String eventSource,String findTime,String information,Long findPersonStaffId,Long dealPersonStaffId,
-                     String dealTime,String dealResult,Long operationPersonStaffId,String blackList,String influence,Long taskTid);
+    @Query(value = "insert into event(eid,event_index,event_type,event_grade,position,photo_path,video_path,status,event_source,find_time,information" +
+            ",deal_time,deal_result,black_list,influence,department_did,find_person_staff_id,deal_person_staff_id,operation_person_staff_id,charge_person_staff_id) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20)",nativeQuery = true)
+    public void save(Long eid,String eventIndex,String eventType, String eventGrade,String position,String photoPath,
+                     String videoPath,String status,String eventSource,String findTime,String information,
+                     String dealTime,String dealResult,String blackList,String influence,Long departmentDid,Long findPersonStaffId,Long dealPersonStaffId,Long operationPersonStaffId,Long chargePersonStaffId);
 
     @Modifying
-    @Query(value = "insert into event(eid,event_index,event_type,event_grade,department,position,charge_person,photo_path,video_path,status,event_source,find_time,information" +
-            ",find_person,deal_person,deal_time,deal_result,operation_person,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)",nativeQuery = true)
-    public void save(Long eid,String eventIndex,String eventType, String eventGrade,String position,String chargePerson,String photoPath,
+    @Query(value = "insert into event(eid,event_index,event_type,event_grade,position,photo_path,video_path,status,event_source,find_time,information" +
+            ",deal_time,deal_result,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)",nativeQuery = true)
+    public void save(Long eid,String eventIndex,String eventType, String eventGrade,String position,String photoPath,
                      String videoPath,String status,String eventSource,String findTime,String information,
                      String dealTime,String dealResult,String blackList,String influence);
     @Query(value = "select e from Event e where e.task.tid=?1")
@@ -64,4 +64,7 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     @Query(value = "select * from event where find_person_staff_id=?1 and status like ?2",nativeQuery = true)
     public List<Event> findByFindPersonAndStatus(Long staffId,String status);
+
+    @Query(value = "Select setval('event_eid_seq',(select max(eid) from event)+1)",nativeQuery = true)
+    public void setIndex();
 }

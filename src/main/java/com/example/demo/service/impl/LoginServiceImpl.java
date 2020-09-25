@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.config.utils.JwtTokenUtils;
+import com.example.demo.entity.LoginInfor;
 import com.example.demo.entity.user.Login;
 import com.example.demo.entity.user.SysRole;
 import com.example.demo.entity.user.SysUser;
@@ -41,4 +42,32 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    @Override
+    public LoginInfor getTokenEntity(Login login) {
+        SysUser user=sysUserRepository.findByaccount(login.getUserName());
+        BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+        LoginInfor loginInfor=new LoginInfor();
+        if(user==null){
+            loginInfor.setMessage("用户名错误");
+            loginInfor.setStatus("400");
+            loginInfor.setToken("");
+            return loginInfor;
+        }
+        else if (!bCryptPasswordEncoder.matches(login.getPassword(), user.getPassword())){
+            loginInfor.setMessage("密码错误");
+            loginInfor.setStatus("400");
+            loginInfor.setToken("");
+            return loginInfor;
+        }
+        else {
+            String role="ROLE_"+user.getRoles().get(0).getRoleName();
+            String token =JwtTokenUtils.createToken(login.getUserName(),role,false);
+            //token='\"'+token+'\"';
+            loginInfor.setMessage("登陆成功");
+            loginInfor.setStatus("200");
+            loginInfor.setToken("Bearer "+token);
+            return loginInfor;
+            //return "{\"status\":\"200\",\"message\":\"登陆成功\",\"token\":"+"Bearer "+token+"}";
+        }
+    }
 }

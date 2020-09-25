@@ -5,6 +5,7 @@ import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
+import com.example.demo.entity.params.Page;
 import com.example.demo.entity.user.SysUser;
 import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EventRepository;
@@ -13,8 +14,7 @@ import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.user.SysUserRepository;
 import com.example.demo.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,20 +40,47 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private StaffInforRepository staffInforRepository;
     @Override
-    public void createTask(Task task,String token) {
+    public void createTask(Task task) {
         if(taskRepository.maxId()==null){
             task.setTid(1l);
         }
         else {
             task.setTid(taskRepository.maxId()+1);
         }
+        String[] tmp1=request.getHeader("Authorization").split(" ");
+        String token=tmp1[1];
         String userName= JwtTokenUtils.getUsername(token);
         SysUser user=sysUserRepository.findByaccount(userName);
         StaffInfor staffInfor=sysUserService.findStaff(user.getSid());
+        System.out.println(staffInfor.getStaffName()+"=====================================================");
         task.setCreator(staffInfor);
         task.setStatus("待处理");
         taskRepository.save(task.getTid(),task.getCreateTime(),task.getWeather(),task.getRecode(),task.getDealSuggest(),
                 task.getDealResult(),task.getStatus());
+        List<Long> leaderIds=new ArrayList<>();
+        List<Long> workerIds=new ArrayList<>();
+        List<StaffInfor> leaders=task.getLeaders();
+        List<StaffInfor> workers=task.getStaffWorkers();
+        if(leaders!=null){
+            for(StaffInfor staffInfor1:leaders){
+                leaderIds.add(staffInfor1.getStaffId());
+            }
+        }
+
+        if(workers!=null){
+            for(StaffInfor staffInfor1:workers){
+                workerIds.add(staffInfor1.getStaffId());
+            }
+        }
+        if(task.getDepartment()!=null){
+            setDepartment(task.getTid(),task.getDepartment().getDid());
+        }
+        if(task.getCreator()!=null){
+            setCreator(task.getTid(),task.getCreator().getStaffId());
+        }
+        setLeaders(task.getTid(),leaderIds);
+        setStaffs(task.getTid(),workerIds);
+        //taskRepository.save(task);
     }
 
     @Override
@@ -66,14 +93,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public String deleteById(Long id) {
+        if(findAllEvents(id)!=null&&findAllEvents(id).size()>0){
+            return "请先清空该任务的绑定事件";
+        }
         taskRepository.deleteById(id);
+        return "success";
     }
 
     @Override
     public Page<Task> findPage(int pageNum, int pageSize) {
-        PageRequest request=PageRequest.of(pageNum-1,pageSize);
-        return taskRepository.findAll(request);
+        Page<Task> page=new Page<>();
+        page.setContent(taskRepository.findPage(pageSize,pageNum*pageSize-pageSize));
+        page.setTotalElements(taskRepository.findCount());
+        page.setPageNum(pageNum);
+        page.setPageSize(pageSize);
+        return page;
     }
 
 
@@ -112,14 +147,20 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public List<Task> findPageTaskBelongStaffByTokenAndStatus(int pageNum, int pageSize, String status) {
+    public Page<Task> findPageTaskBelongStaffByTokenAndStatus(int pageNum, int pageSize, String status) {
         String[] tmp1=request.getHeader("Authorization").split(" ");
         String token=tmp1[1];
         String userName= JwtTokenUtils.getUsername(token);
         SysUser user=sysUserRepository.findByaccount(userName);
         StaffInfor staffInfor=sysUserService.findStaff(user.getSid());
         status="%"+status+"%";
-        return taskRepository.findingByStaffIdAndStatus(staffInfor.getStaffId(),status,pageSize,pageNum*pageSize-pageSize);
+        Page<Task> page=new Page<>();
+        page.setContent(taskRepository.findingByStaffIdAndStatus(staffInfor.getStaffId(),status,pageSize,pageNum*pageSize-pageSize));
+        page.setTotalElements(taskRepository.findingCountByStaffIdAndStatus(staffInfor.getStaffId(),status));
+        page.setPageNum(pageNum);
+        page.setPageSize(pageSize);
+        page.setTotalPages((int)Math.ceil(page.getTotalElements()/pageSize));
+        return page;
     }
 
     @Override
@@ -168,4 +209,12 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
 
+    @Override
+    public void setCreator(Long tid, Long staffId) {
+        StaffInfor staffInfor=staffInforRepository.findBystaffId(staffId);
+        Task task=taskRepository.findBytid(tid);
+        if(staffInfor!=null)
+            task.setCreator(staffInfor);
+        taskRepository.save(task);
+    }
 }

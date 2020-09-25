@@ -16,7 +16,10 @@ public class BirdPlan {
     public String latinName;
     public String birdCount;
     public String watchCount;
-    public String lIndex;//使用顿号隔开I
-    public String pIndex;//使用顿号隔开
+    public String lindex;//使用顿号隔开I
+    public String pindex;//使用顿号隔开
     public String other;
+
+    @ManyToOne
+    public Bird bird;
 }

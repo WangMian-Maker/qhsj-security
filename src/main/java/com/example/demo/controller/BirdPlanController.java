@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.entity.biology.Bird.Bird;
+import com.example.demo.entity.biology.Bird.BirdPlan;
 import com.example.demo.entity.biology.Color;
 import com.example.demo.entity.biology.Model;
+import com.example.demo.entity.params.Page;
 import com.example.demo.service.impl.BirdPlanServiceImpl;
 import com.example.demo.service.impl.BirdServiceImpl;
 import io.swagger.annotations.Api;
@@ -28,6 +31,8 @@ public class BirdPlanController {
     public void deleteById(@PathVariable("id") Long id){
         birdPlanService.deleteById(id);
     }
+
+
     @GetMapping("/getImageForBird/{planName}")
     @ApiOperation(value = "根据计划的名字（第一次之类的）获取旭日图json")
     public List<Model> getImageForBird(@PathVariable("planName") String planName){
@@ -71,5 +76,24 @@ public class BirdPlanController {
         }
 
         return models;
+    }
+
+
+    @PostMapping("/save")
+    public String save(@RequestBody BirdPlan birdPlan){
+        birdPlanService.save(birdPlan);
+        return "success";
+    }
+
+
+    @PutMapping("/update")
+    public String update(@RequestBody BirdPlan birdPlan){
+        birdPlanService.update(birdPlan);
+        return "success";
+    }
+
+    @PostMapping("/findPage/{pageNum}/{pageSize}")
+    public Page<BirdPlan> findPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
+        return birdPlanService.findPage(pageNum,pageSize);
     }
 }

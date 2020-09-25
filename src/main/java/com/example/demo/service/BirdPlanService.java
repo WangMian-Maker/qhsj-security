@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.biology.Bird.Bird;
 import com.example.demo.entity.biology.Bird.BirdPlan;
+import com.example.demo.entity.params.Page;
 
 import java.util.List;
 
@@ -16,4 +18,8 @@ public interface BirdPlanService {
     public String findColor2(String family);
     public String findColor1(String chineseName);
     public void deleteById(Long id);
+
+    public void save(BirdPlan birdPlan);
+    public void update(BirdPlan birdPlan);
+    public Page<BirdPlan> findPage(int pageNum, int pageSize);
 }

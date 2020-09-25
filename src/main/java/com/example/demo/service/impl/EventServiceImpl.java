@@ -2,11 +2,15 @@ package com.example.demo.service.impl;
 
 import com.example.demo.NonStaticResourceHttpRequestHandler;
 import com.example.demo.config.utils.JwtTokenUtils;
+import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
+import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
 import com.example.demo.entity.user.SysRole;
 import com.example.demo.entity.user.SysUser;
+import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EventRepository;
+import com.example.demo.repository.StaffInforRepository;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.user.SysUserRepository;
 import com.example.demo.service.EventService;
@@ -30,6 +34,7 @@ import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -72,20 +77,32 @@ public class EventServiceImpl implements EventService {
     private SysUserRepository sysUserRepository;
     @Autowired
     private SysUserServiceImpl sysUserService;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private StaffInforRepository staffInforRepository;
     public EventServiceImpl(NonStaticResourceHttpRequestHandler nonStaticResourceHttpRequestHandler) {
         this.nonStaticResourceHttpRequestHandler = nonStaticResourceHttpRequestHandler;
     }
 
     @Override
-    public void uploadEvent(String eventStr, List<MultipartFile> photoFiles,List<MultipartFile> videoFiles) {
-        Event event= (Event) JSONObject.toBean(JSONObject.fromObject(eventStr),Event.class);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
-        String photoPathRoot=rootPath+"photo/";
-        String videoPathRoot=rootPath+"video/";
-        event.setPhotoPath(photoPathRoot);
-        event.setVideoPath(videoPathRoot);
-        dealStream(photoFiles,photoPathRoot,".jpg",0);
-        dealStream(videoFiles,videoPathRoot,".mp4",0);
+    public Long uploadEvent(String eventStr, List<MultipartFile> photoFiles,List<MultipartFile> videoFiles) {
+        System.out.println(eventStr);
+        JSONObject jsonObject=new JSONObject(eventStr);
+        Event event= (Event) JSONObject.toBean(jsonObject,Event.class);
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson().getStaffName()+"/";
+        if(photoFiles!=null&&photoFiles.size()>0){
+            String photoPathRoot=rootPath+"photo/";
+            event.setPhotoPath(photoPathRoot);
+            dealStream(photoFiles,photoPathRoot,".jpg",0);
+        }
+        if(videoFiles!=null&&videoFiles.size()>0){
+            String videoPathRoot=rootPath+"video/";
+
+            event.setVideoPath(videoPathRoot);
+
+            dealStream(videoFiles,videoPathRoot,".mp4",0);
+        }
         event.setEid(eventRepository.maxId());
         Long eid=-1l;
         if(eventRepository.maxId()==null){
@@ -93,9 +110,11 @@ public class EventServiceImpl implements EventService {
         }else {
             eid=eventRepository.maxId()+1;
         }
-        eventRepository.save(eid,event.getEventIndex(),event.getEventType(),event.getEventGrade(),event.getDepartment().getDid(),event.getPosition(),event.getChargePerson(),
-                event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation(),event.getFindPerson().getStaffId(),
-                event.getDealPerson().getStaffId(),event.getDealTime(),event.getDealResult(),event.getOperationPerson().getStaffId(),event.getBlackList(),event.getInfluence(),event.getTask().getTid());
+        eventRepository.setIndex();
+        eventRepository.save(eid,event.getEventIndex(),event.getEventType(),event.getEventGrade(),event.getPosition(),
+                event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation()
+                ,event.getDealTime(),event.getDealResult(),event.getBlackList(),event.getInfluence());
+        return eid;
     }
 
     @Override
@@ -276,9 +295,9 @@ public class EventServiceImpl implements EventService {
         if(taskRepository.findBytid(taskId)==null){
             return "fail";
         }
-        eventRepository.save(eid,event.getEventIndex(),event.getEventType(),event.getEventGrade(),event.getDepartment().getDid(),event.getPosition(),event.getChargePerson(),
-                event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation(),event.getFindPerson().getStaffId(),
-                event.getDealPerson().getStaffId(),event.getDealTime(),event.getDealResult(),event.getOperationPerson().getStaffId(),event.getBlackList(),event.getInfluence(),taskId);
+//        eventRepository.save(eid,event.getEventIndex(),event.getEventType(),event.getEventGrade(),event.getDepartment().getDid(),event.getPosition(),event.getChargePerson().getStaffId(),
+//                event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation(),event.getFindPerson().getStaffId(),
+//                event.getDealPerson().getStaffId(),event.getDealTime(),event.getDealResult(),event.getOperationPerson().getStaffId(),event.getBlackList(),event.getInfluence(),taskId);
         return "success";
     }
 
@@ -318,6 +337,96 @@ public class EventServiceImpl implements EventService {
         counts.add(eventRepository.findByFindPersonAndStatus(staffInfor.getStaffId(),"待处理").size());
         counts.add(eventRepository.findByTaskAndStatus(staffInfor.getStaffId(),"已处理").size());
         return counts;
+    }
+
+    @Override
+    public void setDepartment(Department department, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setDepartment(department);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setChargePerson(StaffInfor staffInfor, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setChargePerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setFindPerson(StaffInfor staffInfor, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setFindPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setDealPerson(StaffInfor staffInfor, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setDealPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setOperationPerson(StaffInfor staffInfor, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setOperationPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setTask(Task task, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        event.setTask(task);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setDepartment(Long did, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        Department department=departmentRepository.findBydid(did);
+        event.setDepartment(department);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setChargePerson(Long staffId, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        StaffInfor staffInfor=staffInforRepository.findBystaffId(staffId);
+        event.setChargePerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setFindPerson(Long staffId, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        StaffInfor staffInfor=staffInforRepository.findBystaffId(staffId);
+        event.setFindPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setDealPerson(Long staffId, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        StaffInfor staffInfor=staffInforRepository.findBystaffId(staffId);
+        event.setDealPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setOperationPerson(Long staffId, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        StaffInfor staffInfor=staffInforRepository.findBystaffId(staffId);
+        event.setOperationPerson(staffInfor);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public void setTask(Long tid, Long eid) {
+        Event event=eventRepository.findByeid(eid);
+        Task task=taskRepository.findBytid(tid);
+        event.setTask(task);
+        eventRepository.save(event);
     }
 
     boolean deleteDir(File dir) {
