@@ -5,8 +5,8 @@ import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
+import com.example.demo.entity.params.Page;
 import org.apache.poi.ss.formula.functions.T;
-import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
@@ -21,7 +21,7 @@ public interface EventService {
     public Long uploadEvent(String eventStr, List<MultipartFile> photoFiles, List<MultipartFile> videoFiles);
     public List<String> findPhotoFilePathById(Long id);
     public List<String> findVideoFilePathById(Long id);
-    public Page<Event> findPage(int pageNum,int pageSize);
+    public Page<Event> findPage(int pageNum, int pageSize);
     public void delete(Long id) throws IOException;
     public void myDeleteFile(String url)throws IOException;
     public void videoPlay(Long id, String fileName, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;

@@ -11,6 +11,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
   servlet:
     multipart:
       max-file-size: 1024MB

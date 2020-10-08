@@ -1,8 +1,12 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.config.utils.JwtTokenUtils;
 import com.example.demo.entity.PDF;
+import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.params.Page;
+import com.example.demo.entity.user.SysUser;
 import com.example.demo.repository.PDFRepository;
+import com.example.demo.repository.user.SysUserRepository;
 import com.example.demo.service.PDFService;
 import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.List;
 
@@ -18,18 +23,33 @@ import java.util.List;
 public class PDFServiceImpl implements PDFService {
     @Autowired
     private PDFRepository pdfRepository;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private SysUserRepository sysUserRepository;
+    @Autowired
+    private SysUserServiceImpl sysUserService;
     @Override
-    public void save(PDF pdf, MultipartFile pdfFile) {
-
+    public boolean save(PDF pdf, MultipartFile pdfFile) {
+        if(pdfRepository.findByname(pdf.getName())!=null){
+            return false;
+        }
         String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/PDF/";
         dealFile(pdfFile,rootPath,pdf.getName()+"-"+pdf.getTime()+".pdf");
-        pdf.setPath("/static/PDF/"+pdf.getName()+"-"+pdf.getTime()+".pdf");
+        pdf.setPath("/PDF/"+pdf.getName()+"-"+pdf.getTime()+".pdf");
         Long id=1L;
         if(pdfRepository.maxId()!=null){
             id=pdfRepository.maxId()+1;
         }
         pdf.setId(id);
-        pdfRepository.save(pdf.getId(),pdf.getName(),pdf.getTime(),pdf.getPath());
+
+        String[] tmp1=request.getHeader("Authorization").split(" ");
+        String token=tmp1[1];
+        String userName= JwtTokenUtils.getUsername(token);
+        SysUser user=sysUserRepository.findByaccount(userName);
+        StaffInfor staffInfor=sysUserService.findStaff(user.getSid());
+        pdfRepository.save(pdf.getId(),pdf.getName(),pdf.getTime(),pdf.getPath(),pdf.getDescribe(),pdf.getKeyWord(),staffInfor.getStaffId());
+        return true;
     }
 
     @Override
@@ -56,12 +76,12 @@ public class PDFServiceImpl implements PDFService {
 
     @Override
     public List<PDF> findAll() {
-        return null;
+        return pdfRepository.findAll();
     }
 
     @Override
     public PDF findById(Long id) {
-        return null;
+        return pdfRepository.findByid(id);
     }
 
     @Override

@@ -3,7 +3,13 @@ package com.example.demo.entity.events;
 import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.vividsolutions.jts.awt.PointShapeFactory;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -17,7 +23,10 @@ public class Event {
     private String eventType;
     private String eventGrade;
     //private String department;
-    private String position;
+
+    @JsonSerialize(using = GeometrySerializer.class)
+    //@JsonDeserialize(using = GeometryDeserializer.class)
+    private Point point;
     //private String chargePerson;
     private String photoPath;
     private String videoPath;

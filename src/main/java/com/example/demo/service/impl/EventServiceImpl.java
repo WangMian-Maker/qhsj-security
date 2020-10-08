@@ -6,7 +6,7 @@ import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
-import com.example.demo.entity.user.SysRole;
+import com.example.demo.entity.params.Page;
 import com.example.demo.entity.user.SysUser;
 import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EventRepository;
@@ -14,16 +14,16 @@ import com.example.demo.repository.StaffInforRepository;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.user.SysUserRepository;
 import com.example.demo.service.EventService;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import net.sf.json.JSONObject;
 import org.apache.poi.util.IOUtils;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -34,12 +34,8 @@ import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -85,12 +81,31 @@ public class EventServiceImpl implements EventService {
         this.nonStaticResourceHttpRequestHandler = nonStaticResourceHttpRequestHandler;
     }
 
+    boolean contain(Iterator<String> keys, String key){
+        while (keys.hasNext()){
+            if(keys.next().equals(key)) return true;
+
+        }
+        return false;
+    }
+
     @Override
     public Long uploadEvent(String eventStr, List<MultipartFile> photoFiles,List<MultipartFile> videoFiles) {
         System.out.println(eventStr);
         JSONObject jsonObject=new JSONObject(eventStr);
+        Point point=null;
+        if(contain(jsonObject.getJSONObject("point").keys(),"coordinate")){
+
+            JSONObject coordinateObject=jsonObject.getJSONObject("point").getJSONObject("coordinate");
+            Coordinate coordinate=new Coordinate(coordinateObject.getDouble("x"),coordinateObject.getDouble("y"),coordinateObject.getDouble("z"));
+            PrecisionModel precisionModel=new PrecisionModel();
+            //com.example.demo.entity.events.Point point=new Point(coordinate,precisionModel,4214);
+            point=new Point(coordinate,precisionModel,4214);
+        }
+        //jsonObject.set("point",JSONObject.fromBean(point));
+        jsonObject.remove("point");
         Event event= (Event) JSONObject.toBean(jsonObject,Event.class);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson().getStaffName()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         if(photoFiles!=null&&photoFiles.size()>0){
             String photoPathRoot=rootPath+"photo/";
             event.setPhotoPath(photoPathRoot);
@@ -98,22 +113,45 @@ public class EventServiceImpl implements EventService {
         }
         if(videoFiles!=null&&videoFiles.size()>0){
             String videoPathRoot=rootPath+"video/";
-
             event.setVideoPath(videoPathRoot);
-
             dealStream(videoFiles,videoPathRoot,".mp4",0);
         }
-        event.setEid(eventRepository.maxId());
         Long eid=-1l;
         if(eventRepository.maxId()==null){
             eid=1l;
         }else {
             eid=eventRepository.maxId()+1;
         }
-        eventRepository.setIndex();
-        eventRepository.save(eid,event.getEventIndex(),event.getEventType(),event.getEventGrade(),event.getPosition(),
+        event.setEid(eid);
+        if(point!=null){
+            event.setPoint(point);
+        }
+        eventRepository.save(event.getEid(),event.getEventIndex(),event.getEventType(),event.getEventGrade(),
                 event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation()
                 ,event.getDealTime(),event.getDealResult(),event.getBlackList(),event.getInfluence());
+        //eventRepository.save(event);
+        if(event.getDepartment()!=null&&event.getDepartment().getDid()!=null){
+            eventRepository.updateDepartment(event.getDepartment().getDid(),event.getEid());
+        }
+        if(event.getChargePerson()!=null&&event.getChargePerson().getStaffId()!=null){
+            eventRepository.updateChargePerson(event.getChargePerson().getStaffId(),event.getEid());
+        }
+        if(event.getTask()!=null&&event.getTask().getTid()!=null){
+            eventRepository.updateTask(event.getTask().getTid(),event.getEid());
+        }
+        if(event.getDealPerson()!=null&&event.getDealPerson().getStaffId()!=null){
+            eventRepository.updateDealPerson(event.getDealPerson().getStaffId(),event.getEid());
+        }
+        if(event.getFindPerson()!=null&&event.getFindPerson().getStaffId()!=null){
+            eventRepository.updateFindPerson(event.getFindPerson().getStaffId(),event.getEid());
+        }
+        if(event.getOperationPerson()!=null&&event.getOperationPerson().getStaffId()!=null){
+            eventRepository.updateOperationPerson(event.getOperationPerson().getStaffId(),event.getEid());
+        }
+        if(event.getPoint()!=null){
+            eventRepository.updatePoint(event.getPoint(),event.getEid());
+        }
+        //eventRepository.save(event);
         return eid;
     }
 
@@ -121,17 +159,17 @@ public class EventServiceImpl implements EventService {
     public List<String> findPhotoFilePathById(Long id) {
         List<String> photoPaths=new ArrayList<>();
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String photoPathRoot=rootPath+"photo/";
         //String videoPathRoot=rootPath+"video/";
         File file=new File(photoPathRoot);
         File[] files= file.listFiles();
         if(files==null){
-            photoPaths.add("no photo files");
-            return photoPaths;
+            //photoPaths.add("no photo files");
+            return new ArrayList<String>();
         }
         for (int i=0;i< files.length;i++){
-            photoPaths.add("/dataImage/"+event.getFindTime()+event.getFindPerson()+"/photo/"+files[i].getName());
+            photoPaths.add("/dataImage/"+event.getEid()+"/photo/"+files[i].getName());
         }
         return  photoPaths;
     }
@@ -140,7 +178,7 @@ public class EventServiceImpl implements EventService {
     public List<String> findVideoFilePathById(Long id) {
         List<String> videoPaths=new ArrayList<>();
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String videoPathRoot=rootPath+"video/";
         File file=new File(videoPathRoot);
         File[] files=file.listFiles();
@@ -154,7 +192,7 @@ public class EventServiceImpl implements EventService {
                 String [] tmp=files[i].getName().split("\\.");
                 //System.out.println("path"+tmp.length);
                 String name=tmp[0];
-                videoPaths.add("/dataImage/"+event.getFindTime()+event.getFindPerson()+"/video/image/"+name+".jpg");
+                videoPaths.add("/dataImage/"+event.getEid()+"/video/image/"+name+".jpg");
             }
 
 
@@ -164,14 +202,39 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Page<Event> findPage(int pageNum, int pageSize) {
-        PageRequest request=PageRequest.of(pageNum-1,pageSize);
-        return eventRepository.findAll(request);
+        int startPoint=pageNum*pageSize-pageSize;
+        List<Event> events=eventRepository.findPage(pageSize,startPoint);
+        com.example.demo.entity.params.Page<Event> eventPage=new com.example.demo.entity.params.Page<>();
+        eventPage.setTotalElements(eventRepository.findAll().size());
+        eventPage.setPageNum(pageNum);
+        eventPage.setPageSize(pageSize);
+        eventPage.setContent(events);
+        eventPage.setTotalPages((int)Math.ceil(eventPage.getTotalElements()/eventPage.getPageSize()));
+        //PageRequest request=PageRequest.of(pageNum-1,pageSize);
+        //System.out.println(new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/7/photo/").listFiles().length+"lengthlength");
+        for(Event event:events){
+            String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
+            String realPath=rootPath+"photo/";
+
+            File photo =new File(realPath);
+            if(photo.listFiles()==null||photo.listFiles().length==0){
+                event.setPhotoPath(null);
+                eventRepository.save(event);
+            }
+            realPath=rootPath+"video/";
+            photo =new File(realPath);
+            if(photo.listFiles()==null||photo.listFiles().length==0){
+                event.setVideoPath(null);
+                eventRepository.save(event);
+            }
+        }
+        return eventPage;
     }
 
     @Override
     public void delete(Long id) throws IOException {
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson();
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid();
         eventRepository.deleteById(id);
         File file=new File(rootPath);
         deleteDir(file);
@@ -191,7 +254,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void videoPlay(Long id, String fileName, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String realPath=rootPath+"video/"+fileName;
         //System.out.println(realPath);
         try {
@@ -207,13 +270,11 @@ public class EventServiceImpl implements EventService {
             response.setHeader("Accept-Ranges", "bytes");
             response.setHeader("Etag", "W/\"9767057-1323779115364\"");
             OutputStream os = response.getOutputStream();
-
             os.write(data);
             //先声明的流后关掉！
             os.flush();
             os.close();
             inputStream.close();
-
         } catch (Exception e) {
 
         }
@@ -233,9 +294,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void addPhotoForEvent(Long id, List<MultipartFile> photoFiles) {
-        System.out.println(photoFiles.size()+"啥毛病");
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String realPath=rootPath+"photo/";
         File photo =new File(realPath);
         int origin=-1;
@@ -245,13 +305,15 @@ public class EventServiceImpl implements EventService {
         else {
             origin=photo.listFiles().length;
         }
+        event.setPhotoPath(realPath);
+        eventRepository.save(event);
         dealStream(photoFiles,realPath,".jpg",origin);
     }
 
     @Override
     public void addVideoForEvent(Long id, List<MultipartFile> photoFiles) {
         Event event=eventRepository.findByeid(id);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String realPath=rootPath+"video/";
 
         File photo =new File(realPath);
@@ -262,12 +324,14 @@ public class EventServiceImpl implements EventService {
         else {
             origin=photo.listFiles().length;
         }
-
+        event.setVideoPath(realPath);
+        eventRepository.save(event);
         dealStream(photoFiles,realPath,".mp4",origin);
     }
 
     @Override
     public Boolean update(Event event) {
+
         if(eventRepository.findByeid(event.getEid())==null){
             return false;
         }
@@ -278,7 +342,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public String uploadEventToTask(Long taskId, String eventStr, List<MultipartFile> photoFiles, List<MultipartFile> videoFiles) {
         Event event= (Event) JSONObject.toBean(JSONObject.fromObject(eventStr),Event.class);
-        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getFindTime()+event.getFindPerson()+"/";
+        String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String photoPathRoot=rootPath+"photo/";
         String videoPathRoot=rootPath+"video/";
         event.setPhotoPath(photoPathRoot);

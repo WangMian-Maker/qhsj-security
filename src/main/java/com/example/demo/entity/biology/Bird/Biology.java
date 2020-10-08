@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 @Entity
 @Data
-public class Bird {
+public class Biology {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long bid;
@@ -20,6 +20,10 @@ public class Bird {
     public String orderVice;// 目
     public String orderViceEnglish;
     public String color3;
+    @Column(length = 1000)
     private String information;
+    @Column(length = 1000)
     private String existInformation;
+    private String biologyType;
+    private String img_scr;
 }

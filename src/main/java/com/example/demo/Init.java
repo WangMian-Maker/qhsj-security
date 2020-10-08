@@ -6,11 +6,14 @@ import com.example.demo.entity.user.SysRights;
 import com.example.demo.entity.user.SysRole;
 import com.example.demo.entity.user.SysUser;
 import com.example.demo.service.impl.*;
+import com.fasterxml.jackson.databind.ObjectReader;
+import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,4 +80,39 @@ public class Init {
             sysUserService.setStaff(staffInfor,user);
         }
     }
+
+//    @PostConstruct
+//    private void once(){
+//        FileOutputStream fileOutputStream=null;
+//        InputStream inputStream=null;
+//        String origin="/home/wang/Downloads/鸟类图片";
+//        String target=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/biology/";
+//        File out=new File(target);
+//        if (out.getParentFile() != null || !out.getParentFile().isDirectory()) {
+//            // 创建父文件夹
+//            out.getParentFile().mkdirs();
+//        }
+//        if(out==null||!out.isDirectory()){
+//            out.mkdirs();
+//        }
+//        File file=new File(origin);
+//        File[] files=file.listFiles();
+//        for(int i=0;i<files.length;i++){
+//            File file1=files[i];
+//            String name=file1.getName().replace(".jpg","");
+//            String dir=target+name+"/";
+//            File pathFile=new File(dir);
+//            pathFile.mkdirs();
+//            File outFile=new File(dir+"0.jpg");
+//            try {
+//                fileOutputStream=new FileOutputStream(outFile);
+//                InputStream stream=new FileInputStream(file1);
+//                IOUtils.copy(stream,fileOutputStream);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

@@ -1,61 +1,61 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.biology.Bird.BiologyPlan;
+import com.example.demo.entity.biology.Bird.BiologyPlanList;
 import com.example.demo.entity.params.Page;
 import com.example.demo.service.impl.BiologyPlanListServiceImpl;
-import com.example.demo.entity.biology.Bird.BiologyPlanList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("data/birdPlanList")
-@Api(tags = "鸟类统计数据")
-public class BirdPlanListController {
+@RequestMapping("data/amphibiousPlanList")
+@Api(tags = "两栖类统计数据")
+public class AmphibiousPlanListController {
     @Autowired
-    private BiologyPlanListServiceImpl birdPlanListService;
+    private BiologyPlanListServiceImpl biologyPlanListService;
 
     @PostMapping("/save")
     @ApiOperation(value = "保存")
     public String save(@RequestBody BiologyPlanList biologyPlanList){
-        biologyPlanList.setBiologyType("鸟类");
-        birdPlanListService.save(biologyPlanList);
+        biologyPlanList.setBiologyType("两栖");
+        biologyPlanListService.save(biologyPlanList);
         return "success";
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "更新")
+    @ApiOperation(value = "编辑")
     public String update(@RequestBody BiologyPlanList biologyPlanList){
-        biologyPlanList.setBiologyType("鸟类");
-        birdPlanListService.update(biologyPlanList);
+        biologyPlanList.setBiologyType("两栖");
+        biologyPlanListService.update(biologyPlanList);
         return "success";
     }
 
 
     @PostMapping("/findPage/{pageNum}/{pageSize}")
-    @ApiOperation(value = "查询分页")
+    @ApiOperation(value = "分页查询")
     public Page<BiologyPlanList> findPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
-        return birdPlanListService.findPage(pageNum,pageSize,"鸟类");
+        return biologyPlanListService.findPage(pageNum,pageSize,"两栖");
     }
 
     @DeleteMapping("/deleteById/{bid}")
     @ApiOperation(value = "删除")
     public String delete(@PathVariable("bid") Long bid){
-        birdPlanListService.deleteById(bid);
+        biologyPlanListService.deleteById(bid);
         return "success";
     }
 
     @PostMapping("/addBiologyPlan/{bid}")
     @ApiOperation(value = "添加记录")
-    public String  addBirdPlan(@RequestBody BiologyPlan biologyPlan, @PathVariable("bid") Long bid){
-        biologyPlan.setBiologyType("鸟类");
-        birdPlanListService.addBirdPlan(biologyPlan,bid);
+    public String  addBiologyPlan(@RequestBody BiologyPlan biologyPlan, @PathVariable("bid") Long bid){
+        biologyPlan.setBiologyType("两栖");
+        biologyPlanListService.addBirdPlan(biologyPlan,bid);
         return "success";
     }
     @PostMapping("/findBiologyPlanPage/{pageNum}/{pageSize}/{bid}")
-    @ApiOperation(value = "查询记录分页")
-    public Page<BiologyPlan> findBirdPlanPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize, @PathVariable("bid") Long bid){
-        return birdPlanListService.findBirdPlanPage(pageNum,pageSize,bid,"鸟类");
+    @ApiOperation(value = "分页查询记录")
+    public Page<BiologyPlan> findBiologyPlanPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize, @PathVariable("bid") Long bid){
+        return biologyPlanListService.findBirdPlanPage(pageNum,pageSize,bid,"两栖");
     }
 }

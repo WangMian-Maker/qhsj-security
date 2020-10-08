@@ -3,12 +3,12 @@ package com.example.demo.controller;
 import com.example.demo.NonStaticResourceHttpRequestHandler;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
+import com.example.demo.entity.params.Page;
 import com.example.demo.entity.params.TaskParam1;
 import com.example.demo.service.impl.EventServiceImpl;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +81,7 @@ public class EventController {
 
     @PutMapping("/update")
     public String update(@RequestBody Event event){
+        System.out.println( JSONObject.fromBean(event).toString());
         if(eventService.update(event)){
             return "success";
         }

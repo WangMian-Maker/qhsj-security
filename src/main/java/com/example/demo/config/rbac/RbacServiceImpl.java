@@ -28,7 +28,7 @@ public class RbacServiceImpl implements RbacService{
         Object principal=authentication.getPrincipal();
         Set<String> urls=new HashSet<>();
         AntPathMatcher antPathMatcher=new AntPathMatcher();
-        System.out.println("我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦"+principal.toString());
+        //System.out.println("我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦我干哦"+principal.toString());
         if(!(principal instanceof UserDetails)&&principal!=null){
             String account=principal.toString();
             List<SysRole> tmpRoles=sysUserRepository.findByaccount(account).getRoles();

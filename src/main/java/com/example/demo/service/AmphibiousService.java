@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.biology.Amphibious.Amphibious;
-import com.example.demo.entity.biology.Bird.Bird;
 
 import java.util.List;
 

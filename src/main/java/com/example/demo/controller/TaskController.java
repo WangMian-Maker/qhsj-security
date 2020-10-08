@@ -28,6 +28,9 @@ public class TaskController {
 
     @PutMapping("/update")
     public String update(@RequestBody Task task){
+        Long id =task.getTid();
+        StaffInfor staffInfor=taskService.findById(id).getCreator();
+        task.setCreator(staffInfor);
         if(taskService.update(task)){
             return "success";
         }

@@ -1,7 +1,6 @@
 package com.example.demo.repository.Amphibious;
 
 import com.example.demo.entity.biology.Amphibious.AmphibiousPlan;
-import com.example.demo.entity.biology.Bird.BirdPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

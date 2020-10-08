@@ -2,9 +2,7 @@ package com.example.demo.service.impl;
 
 
 import com.example.demo.entity.biology.Amphibious.Amphibious;
-import com.example.demo.entity.biology.Bird.Bird;
 import com.example.demo.repository.Amphibious.AmphibiousRepository;
-import com.example.demo.repository.Bird.BirdRepository;
 import com.example.demo.service.AmphibiousService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

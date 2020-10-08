@@ -20,8 +20,10 @@ public class PDFDownloadController {
     @PostMapping("/save")
     public String save(@RequestPart("pdf") String pdfStr, @RequestPart("pdfFile") MultipartFile pdfFile){
         PDF pdf= (PDF) JSONObject.toBean(new JSONObject(pdfStr),PDF.class);
-        pdfService.save(pdf,pdfFile);
-        return "success";
+        if(pdfService.save(pdf,pdfFile)){
+            return "success";
+        }
+        return "fail:name have exit";
     }
 
     @PutMapping("/update")

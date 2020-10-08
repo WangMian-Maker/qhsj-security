@@ -13,55 +13,54 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("data/bird")
-@Api(tags = "鸟类基础数据")
-public class BirdController {
+@RequestMapping("data/amphibious")
+@Api(tags = "两栖类基础数据")
+public class AmphibiousController {
     @Autowired
-    private BiologyServiceImpl birdService;
+    private BiologyServiceImpl amphibiousService;
 
     @PostMapping("/save")
     @ApiOperation(value = "保存")
     public String save(@RequestBody Biology biology){
-        biology.setBiologyType("鸟类");
-        birdService.save(biology);
+        biology.setBiologyType("两栖");
+        amphibiousService.save(biology);
         return "success";
     }
-
-
 
     @DeleteMapping("/deleteById/{bid}")
     @ApiOperation(value = "删除")
     public String deleteById(@PathVariable("bid")Long bid){
-        birdService.delete(bid);
+        amphibiousService.delete(bid);
         return "success";
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "更新")
+    @ApiOperation(value = "编辑")
     public String update(@RequestBody Biology biology){
-        biology.setBiologyType("鸟类");
-        birdService.update(biology);
+        biology.setBiologyType("两栖");
+        amphibiousService.update(biology);
         return "success";
     }
 
     @PostMapping("/findPage/{pageNum}/{pageSize}")
     @ApiOperation(value = "分页查询")
     public Page<Biology> findPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
-        return birdService.findPage(pageNum,pageSize,"鸟类");
+        return amphibiousService.findPage(pageNum,pageSize,"两栖");
     }
 
+
     @PostMapping("/findAll")
-    @ApiOperation(value = "查询所有")
+    @ApiOperation(value = "获取所有")
     public List<Biology> findAll(){
-        return birdService.findAll("鸟类");
+        return amphibiousService.findAll("两栖");
     }
 
     @PostMapping("/saveWithImg")
     @ApiOperation(value = "保存(带图片)")
     public String saveWithImg(@RequestPart("biology") String biologyBJson, @RequestPart("imgs")List<MultipartFile> imgs){
         Biology biology= (Biology) JSONObject.toBean(new JSONObject(biologyBJson),Biology.class);
-        biology.setBiologyType("鸟类");
-        birdService.save(biology,imgs);
+        biology.setBiologyType("两栖");
+        amphibiousService.save(biology,imgs);
         return "success";
     }
 
@@ -69,7 +68,7 @@ public class BirdController {
     @ApiOperation(value = "添加图片")
     public String addImgs(@RequestPart("id") String id, @RequestPart("imgs")List<MultipartFile> imgs){
         Long tmpId=Long.valueOf(id);
-        birdService.addImg(imgs,tmpId);
+        amphibiousService.addImg(imgs,tmpId);
         return "success";
     }
 
@@ -77,13 +76,13 @@ public class BirdController {
     @ApiOperation(value = "删除图片(url为图片去掉ip port的路径)")
     public String deleteImg(@RequestBody String url){
         JSONObject object=JSONObject.fromObject(url);
-        birdService.myDeleteFile(object.getString("url"));
+        amphibiousService.myDeleteFile(object.getString("url"));
         return "success";
     }
 
     @PostMapping("/findImgs/{id}")
     @ApiOperation(value = "查询图片")
     public  List<String> findImgs(@PathVariable("id") Long id){
-        return birdService.findImgs(id);
+        return amphibiousService.findImgs(id);
     }
 }

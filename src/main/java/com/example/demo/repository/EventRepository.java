@@ -3,6 +3,9 @@ package com.example.demo.repository;
 import com.example.demo.entity.Department;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.events.Event;
+import com.example.demo.entity.params.Page;
+import com.vividsolutions.jts.geom.Point;
+import org.apache.poi.ss.formula.functions.Even;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -51,11 +54,11 @@ public interface EventRepository extends JpaRepository<Event,Long> {
                      String dealTime,String dealResult,String blackList,String influence,Long departmentDid,Long findPersonStaffId,Long dealPersonStaffId,Long operationPersonStaffId,Long chargePersonStaffId);
 
     @Modifying
-    @Query(value = "insert into event(eid,event_index,event_type,event_grade,position,photo_path,video_path,status,event_source,find_time,information" +
-            ",deal_time,deal_result,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)",nativeQuery = true)
-    public void save(Long eid,String eventIndex,String eventType, String eventGrade,String position,String photoPath,
-                     String videoPath,String status,String eventSource,String findTime,String information,
-                     String dealTime,String dealResult,String blackList,String influence);
+    @Query(value = "insert into event(eid,event_index,event_type,event_grade,photo_path,video_path,status,event_source,find_time,information" +
+            ",deal_time,deal_result,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)",nativeQuery = true)
+    public void save(Long eid, String eventIndex, String eventType, String eventGrade, String photoPath,
+                     String videoPath, String status, String eventSource, String findTime, String information,
+                     String dealTime, String dealResult, String blackList, String influence);
     @Query(value = "select e from Event e where e.task.tid=?1")
     public List<Event> findEventInTask(Long tid);
 
@@ -67,4 +70,38 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     @Query(value = "Select setval('event_eid_seq',(select max(eid) from event)+1)",nativeQuery = true)
     public void setIndex();
+
+    @Modifying
+    @Query(value = "update event set department_did=?1 where eid=?2",nativeQuery = true)
+    public void updateDepartment(Long did,Long eid);
+
+    @Modifying
+    @Query(value = "update event set charge_person_staff_id=?1 where eid=?2",nativeQuery = true)
+    public void updateChargePerson(Long staffId,Long eid);
+
+    @Modifying
+    @Query(value = "update event set find_person_staff_id=?1 where eid=?2",nativeQuery = true)
+    public void updateFindPerson(Long staffId,Long eid);
+
+    @Modifying
+    @Query(value = "update event set deal_person_staff_id=?1 where eid=?2",nativeQuery = true)
+    public void updateDealPerson(Long staffId,Long eid);
+
+    @Modifying
+    @Query(value = "update event set operation_person_staff_id=?1 where eid=?2",nativeQuery = true)
+    public void updateOperationPerson(Long staffId,Long eid);
+
+    @Modifying
+    @Query(value = "update event set task_tid=?1 where eid=?2",nativeQuery = true)
+    public void updateTask(Long tid,Long eid);
+
+    @Modifying
+    @Query(value = "update event set point=?1 where eid=?2",nativeQuery = true)
+    public void updatePoint(Point point,Long eid);
+
+
+    @Query(value = "select * from event order by eid desc limit ?1 offset ?2",nativeQuery = true)
+    public List<Event> findPage(int pageSize,int startPoint);
+
+
 }
