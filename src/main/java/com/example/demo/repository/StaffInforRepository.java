@@ -23,6 +23,9 @@ public interface StaffInforRepository extends JpaRepository<StaffInfor,Long> {
 //    private String marriage;
 //    private String birthPosition;
 //    private String currentPosition;
+    String findAllByDepartmentOrStaffNameSql="select * from staff_infor where department_did in (select did from department where department_name like ?1) " +
+            "or staff_name like ?1";
+
     @Modifying
     @Query(value = "insert into staff_infor (staff_id,staff_name,sex,birthday,nature,outlook,position,begin_work_time,id_card,phone_number,mail,marriage,birth_position,current_position,census_register,department_did) " +
             "values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)",nativeQuery = true)
@@ -51,4 +54,7 @@ public interface StaffInforRepository extends JpaRepository<StaffInfor,Long> {
     public List<String> findAllDepartment();
 //    @Query(value = "select s from StaffInfor s where s.sysUser.uid=?1")
 //    public List<StaffInfor> findByUser(Long uid);
+
+    @Query(value = findAllByDepartmentOrStaffNameSql,nativeQuery = true)
+    public List<StaffInfor> findAllByDepartmentOrStaffName(String param);
 }

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.ManyToOne;
+import java.sql.Time;
 import java.util.List;
 
 @Repository
@@ -43,23 +44,27 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 //    private StaffInfor dealPerson;
 //    @ManyToOne
 //    private StaffInfor operationPerson;
+
     @Query(value = "select max(e.eid) from Event e")
     public Long maxId();
     public Event findByeid(Long eid);
     @Modifying
-    @Query(value = "insert into event(eid,event_index,event_type,event_grade,position,photo_path,video_path,status,event_source,find_time,information" +
-            ",deal_time,deal_result,black_list,influence,department_did,find_person_staff_id,deal_person_staff_id,operation_person_staff_id,charge_person_staff_id) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20)",nativeQuery = true)
-    public void save(Long eid,String eventIndex,String eventType, String eventGrade,String position,String photoPath,
+    @Query(value = "insert into event(eid,time,event_index,event_type,event_grade,position,photo_path,video_path,status,event_source,find_time,information" +
+            ",deal_time,deal_result,black_list,influence,department_did,find_person_staff_id,deal_person_staff_id,operation_person_staff_id,charge_person_staff_id) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21)",nativeQuery = true)
+    public void save(Long eid,Long time,String eventIndex,String eventType, String eventGrade,String position,String photoPath,
                      String videoPath,String status,String eventSource,String findTime,String information,
                      String dealTime,String dealResult,String blackList,String influence,Long departmentDid,Long findPersonStaffId,Long dealPersonStaffId,Long operationPersonStaffId,Long chargePersonStaffId);
 
     @Modifying
-    @Query(value = "insert into event(eid,event_index,event_type,event_grade,photo_path,video_path,status,event_source,find_time,information" +
-            ",deal_time,deal_result,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)",nativeQuery = true)
-    public void save(Long eid, String eventIndex, String eventType, String eventGrade, String photoPath,
+    @Query(value = "insert into event(eid,time,event_index,event_type,event_grade,photo_path,video_path,status,event_source,find_time,information" +
+            ",deal_time,deal_result,black_list,influence) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)",nativeQuery = true)
+    public void save(Long eid, Long time, String eventIndex, String eventType, String eventGrade, String photoPath,
                      String videoPath, String status, String eventSource, String findTime, String information,
                      String dealTime, String dealResult, String blackList, String influence);
-    @Query(value = "select e from Event e where e.task.tid=?1")
+    @Query(value = "select * from event where task_tid=?1 and status like ?4 order by eid desc limit ?3 offset ?2",nativeQuery = true)
+    public List<Event> findPageEventInTaskByStatus(Long tid,int startPoint,int pageSize,String status);
+
+    @Query(value = "select * from event where task_tid=?1",nativeQuery = true)
     public List<Event> findEventInTask(Long tid);
 
     @Query(value = "select * from event where task_tid=?1 and status like ?2",nativeQuery = true)
@@ -104,4 +109,9 @@ public interface EventRepository extends JpaRepository<Event,Long> {
     public List<Event> findPage(int pageSize,int startPoint);
 
 
+    @Query(value = "select * from event where time>?1 and task_tid=?2 and status like ?3 order by eid desc",nativeQuery = true)
+    public List<Event> findNew(Long currentTime,Long tid,String status);
+
+    @Query(value = "select * from event where time<?1 and task_tid=?2 and status like ?3 order by eid desc limit ?4",nativeQuery = true)
+    public List<Event> findOld(Long lastTime,Long tid,String status, int size);
 }

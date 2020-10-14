@@ -84,4 +84,11 @@ public class StaffInforServiceImpl implements StaffInforService {
         name="%"+name+"%";
         return staffInforRepository.findByStaffNameInDepartment(did,name);
     }
+
+    @Override
+    public List<StaffInfor> findAllByStaffNameOrDepartment(String param) {
+        if(param==null ||param=="") return null;
+        param="%"+param+"%";
+        return staffInforRepository.findAllByDepartmentOrStaffName(param);
+    }
 }

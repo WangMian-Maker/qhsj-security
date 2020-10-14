@@ -81,7 +81,7 @@ public class EventController {
 
     @PutMapping("/update")
     public String update(@RequestBody Event event){
-        System.out.println( JSONObject.fromBean(event).toString());
+        //System.out.println( eventStr);
         if(eventService.update(event)){
             return "success";
         }
@@ -157,6 +157,11 @@ public class EventController {
     public String setTask(@PathVariable("tid")Long tid,@PathVariable("eid")Long eid){
         eventService.setTask(tid,eid);
         return "success";
+    }
+
+    @PostMapping("/findById/{id}")
+    public Event findById(@PathVariable("id") Long id){
+        return eventService.findById(id);
     }
 
 }

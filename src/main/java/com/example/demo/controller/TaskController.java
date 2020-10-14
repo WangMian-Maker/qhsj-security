@@ -67,6 +67,18 @@ public class TaskController {
         return taskService.findAllEvents(tid);
     }
 
+    @PostMapping("/findPageEventByStatus")
+    public Page<Event> findPageEventByStatus(Long tid, String status,Integer pageNum, Integer pageSize){
+
+        return taskService.findPageEventByStatus(status,tid,pageNum,pageSize);
+    }
+
+    @PostMapping("/findFirstPageEventByStatus")
+    public Page<Event> findFirstPageEventByStatus(Long tid, String status){
+
+        return taskService.findFirstPage(status,tid);
+    }
+
     @PostMapping("/findPageByWorker/{pageNum}/{pageSize}/{worker}")
     public List<Task> findPageByWorker(@PathVariable("pageNum") int pageNum,@PathVariable("pageSize") int pageSize,@PathVariable("worker") String worker){
         return taskService.findPage(pageNum,pageSize,worker);
@@ -94,5 +106,16 @@ public class TaskController {
         countList.add(taskService.findCountByStatus("已处理"));
         countList.add(taskService.findCountByStatus("处理中"));
         return countList;
+    }
+
+
+    @PostMapping("/findNew")
+    public List<Event> findNew(Long tid,Long currentTime,String status){
+        return taskService.findNew(currentTime,status,tid);
+    }
+
+    @PostMapping("/findOld")
+    public List<Event> findOld(Long tid,Long lastTime,int size,String status){
+        return taskService.findOld(lastTime,tid,status,size);
     }
 }

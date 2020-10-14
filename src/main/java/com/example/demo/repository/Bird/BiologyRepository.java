@@ -11,6 +11,10 @@ import java.util.List;
 @Repository
 public interface BiologyRepository extends JpaRepository<Biology,Long> {
 
+    String findCount="select count(bid) from biology where protect_grade_id=?1 and biology_type=?2";
+//    String findCount_2="select count(bid) from biology where protect_grade='国家Ⅱ级' and biology_type=?2";
+//    String findCount_3="select count(bid) from biology where protect_grade='省级' and biology_type=?1";
+//    String findCount_4="select count(bid) from biology where protect_grade=null and biology_type=?1";
 
     //@Query(value = "select distinct b.orderVice from biology b")
     @Query(value = "select b.orderVice from Biology b where b.biologyType=?1 group by b.orderVice order by min(b.bid)")
@@ -46,9 +50,9 @@ public interface BiologyRepository extends JpaRepository<Biology,Long> {
 //    public String color3;
 
     @Modifying
-    @Query(value = "insert into biology (bid,chinese_name,professor_name,protect_grade,color1,family,family_english,color2,order_vice,order_vice_english,color3,information,exist_information,biology_type) values (?1,?2,?3," +
+    @Query(value = "insert into biology (bid,chinese_name,professor_name,protect_grade_id,color1,family,family_english,color2,order_vice,order_vice_english,color3,information,exist_information,biology_type) values (?1,?2,?3," +
             "?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)",nativeQuery = true)
-    public void save(Long bid,String chineseName,String professorName,String protectGrade,String color1,String family,String familyEnglish,String color2,
+    public void save(Long bid,String chineseName,String professorName,Long protectGrade,String color1,String family,String familyEnglish,String color2,
                      String orderVice,String orderViceEnglish,String color3,String information,String existInformation,String biologyType);
 
     @Query(value = "select * from biology where biology_type=?3 order by bid desc limit ?1 offset ?2 ",nativeQuery = true)
@@ -61,4 +65,7 @@ public interface BiologyRepository extends JpaRepository<Biology,Long> {
 
     @Query(value = "select * from biology where biology_type=?1",nativeQuery = true)
     public List<Biology> findAll(String biologyType);
+
+    @Query(value = findCount,nativeQuery = true)
+    public int findCountByGradeAndType(Long gradeId,String type);
 }

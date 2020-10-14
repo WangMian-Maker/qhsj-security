@@ -153,7 +153,7 @@ public class BiologyPlanServiceImpl implements BiologyPlanService {
         birdPage.setPageSize(pageSize);
         birdPage.setContent(birds);
         birdPage.setTotalElements(biologyPlanRepository.findCount(biologyType));
-        birdPage.setTotalPages((int)Math.ceil(birdPage.getTotalElements()/pageSize));
+        birdPage.setTotalPages((int)Math.ceil((float)birdPage.getTotalElements()/(float)pageSize));
         return birdPage;
     }
 }

@@ -57,7 +57,7 @@ public class BiologyPlanListServiceImpl implements BiologyPlanListService {
         birdPlanListPage.setPageSize(pageSize);
         birdPlanListPage.setPageNum(pageNum);
         birdPlanListPage.setTotalElements(findAll(biologyType).size());
-        birdPlanListPage.setTotalPages((int)Math.ceil(birdPlanListPage.getTotalElements()/birdPlanListPage.getPageSize()));
+        birdPlanListPage.setTotalPages((int)Math.ceil((float)birdPlanListPage.getTotalElements()/(float)birdPlanListPage.getPageSize()));
         return birdPlanListPage;
     }
 
@@ -112,7 +112,7 @@ public class BiologyPlanListServiceImpl implements BiologyPlanListService {
         birdPlanPage.setPageSize(pageSize);
         birdPlanPage.setPageNum(pageNum);
         birdPlanPage.setTotalElements(biologyPlans.size());
-        birdPlanPage.setTotalPages((int)Math.ceil(birdPlanPage.getTotalElements()/birdPlanPage.getPageSize()));
+        birdPlanPage.setTotalPages((int)Math.ceil((float)birdPlanPage.getTotalElements()/(float)birdPlanPage.getPageSize()));
         return birdPlanPage;
     }
 }

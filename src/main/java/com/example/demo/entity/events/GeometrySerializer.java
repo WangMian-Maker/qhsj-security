@@ -154,14 +154,14 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
     }
 
     private void writePointCoords(JsonGenerator jgen, Point p) throws IOException {
-        jgen.writeStartArray();
-        jgen.writeNumber(p.getX());
-        jgen.writeNumber(p.getY());
+        jgen.writeStartObject();
+        jgen.writeNumberField("x",p.getX());
+        jgen.writeNumberField("y",p.getY());
         if (p.getCoordinate() == null) {
             throw new IllegalStateException("getZ called on empty Point");
         } else {
-            jgen.writeNumber(p.getCoordinate().z);
+            jgen.writeNumberField("z",p.getCoordinate().z);
         }
-        jgen.writeEndArray();
+        jgen.writeEndObject();
     }
 }

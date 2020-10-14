@@ -70,7 +70,7 @@ public class PDFServiceImpl implements PDFService {
         pdfPage.setPageNum(pageNum);
         pdfPage.setPageSize(pageSize);
         pdfPage.setTotalElements(findAll().size());
-        pdfPage.setTotalPages((int)Math.ceil(pdfPage.getTotalElements()/pdfPage.getPageSize()));
+        pdfPage.setTotalPages((int)Math.ceil((float)pdfPage.getTotalElements()/(float)pdfPage.getPageSize()));
         return pdfPage;
     }
 

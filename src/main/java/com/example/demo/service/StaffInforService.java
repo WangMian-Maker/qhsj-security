@@ -17,4 +17,6 @@ public interface StaffInforService {
     public List<StaffInfor> findStaffByDepartment(String department);
     public List<StaffInfor> findStaffByStaffNameInDepartment(Long did,String name);
     public List<StaffInfor> findStaffByStaffNameInDepartmentAndNoUser(Long did,String name);
+
+    public List<StaffInfor> findAllByStaffNameOrDepartment(String param);
 }

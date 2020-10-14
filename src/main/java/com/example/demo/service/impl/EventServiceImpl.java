@@ -18,6 +18,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import net.sf.json.JSONObject;
+import org.apache.poi.ss.formula.functions.Even;
 import org.apache.poi.util.IOUtils;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -34,6 +35,7 @@ import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -126,7 +128,8 @@ public class EventServiceImpl implements EventService {
         if(point!=null){
             event.setPoint(point);
         }
-        eventRepository.save(event.getEid(),event.getEventIndex(),event.getEventType(),event.getEventGrade(),
+        event.setTime(System.currentTimeMillis());
+        eventRepository.save(event.getEid(),event.getTime(),event.getEventIndex(),event.getEventType(),event.getEventGrade(),
                 event.getPhotoPath(),event.getVideoPath(),event.getStatus(),event.getEventSource(),event.getFindTime(),event.getInformation()
                 ,event.getDealTime(),event.getDealResult(),event.getBlackList(),event.getInfluence());
         //eventRepository.save(event);
@@ -209,7 +212,7 @@ public class EventServiceImpl implements EventService {
         eventPage.setPageNum(pageNum);
         eventPage.setPageSize(pageSize);
         eventPage.setContent(events);
-        eventPage.setTotalPages((int)Math.ceil(eventPage.getTotalElements()/eventPage.getPageSize()));
+        eventPage.setTotalPages((int)Math.ceil((float)eventPage.getTotalElements()/(float) eventPage.getPageSize()));
         //PageRequest request=PageRequest.of(pageNum-1,pageSize);
         //System.out.println(new File(Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/7/photo/").listFiles().length+"lengthlength");
         for(Event event:events){
@@ -331,7 +334,20 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Boolean update(Event event) {
-
+//        JSONObject jsonObject=new JSONObject(eventStr);
+//        Point point=null;
+//        if(jsonObject.get("point")!=null){
+//            if(contain(jsonObject.getJSONObject("point").keys(),"coordinate")){
+//                JSONObject coordinateObject=jsonObject.getJSONObject("point").getJSONObject("coordinate");
+//                Coordinate coordinate=new Coordinate(coordinateObject.getDouble("x"),coordinateObject.getDouble("y"),coordinateObject.getDouble("z"));
+//                PrecisionModel precisionModel=new PrecisionModel();
+//                //com.example.demo.entity.events.Point point=new Point(coordinate,precisionModel,4214);
+//                point=new Point(coordinate,precisionModel,4214);
+//            }
+//        }
+//        jsonObject.set("point",null);
+//        Event event=(Event)JSONObject.toBean(jsonObject,Event.class);
+//        event.setPoint(point);
         if(eventRepository.findByeid(event.getEid())==null){
             return false;
         }
@@ -491,6 +507,11 @@ public class EventServiceImpl implements EventService {
         Task task=taskRepository.findBytid(tid);
         event.setTask(task);
         eventRepository.save(event);
+    }
+
+    @Override
+    public Event findById(Long id) {
+        return eventRepository.findByeid(id);
     }
 
     boolean deleteDir(File dir) {

@@ -1,6 +1,7 @@
 package com.example.demo.entity.biology.Bird;
 
 
+import com.example.demo.entity.ProtectGrade;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +14,9 @@ public class Biology {
     public String chineseName;
     public String professorName;
     public String color1;
-    private String protectGrade;
+
+    @OneToOne
+    private ProtectGrade protectGrade;
     public String family;//科
     public String familyEnglish;
     public String color2;

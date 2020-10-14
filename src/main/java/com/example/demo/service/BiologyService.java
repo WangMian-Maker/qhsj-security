@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 
 import com.example.demo.entity.biology.Bird.Biology;
+import com.example.demo.entity.biology.GradeCount;
 import com.example.demo.entity.params.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,4 +25,6 @@ public interface BiologyService {
     public void addImg(List<MultipartFile> imgs,Long id);
     public void myDeleteFile(String filePath);
     public List<String> findImgs(Long id);
+
+    public GradeCount findCountByGradeAndType(Long gradeId, String type);
 }

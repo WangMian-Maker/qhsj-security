@@ -124,6 +124,45 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Page<Event> findPageEventByStatus(String status, Long tid,int pageNum,int pageSize) {
+        int startPoint=pageNum*pageSize-pageSize;
+        status=status==null?"%%": "%"+status+"%";
+        Page<Event> eventPage=new Page<>();
+        eventPage.setContent(eventRepository.findPageEventInTaskByStatus(tid,startPoint,pageSize,status));
+        eventPage.setPageSize(pageSize);
+        eventPage.setPageNum(pageNum);
+        eventPage.setTotalElements(findAllEvents(tid)==null?0:findAllEvents(tid).size());
+        eventPage.setTotalPages((int)Math.ceil((float)eventPage.getTotalElements()/(float)eventPage.getPageSize()));
+        return eventPage;
+    }
+
+    @Override
+    public Page<Event> findFirstPage(String status, Long tid) {
+        int pageNum=1;int pageSize=5;
+        int startPoint=pageNum*pageSize-pageSize;
+        status=status==null?"%%": "%"+status+"%";
+        Page<Event> eventPage=new Page<>();
+        eventPage.setContent(eventRepository.findPageEventInTaskByStatus(tid,startPoint,pageSize,status));
+        eventPage.setPageSize(pageSize);
+        eventPage.setPageNum(pageNum);
+        eventPage.setTotalElements(findAllEvents(tid)==null?0:findAllEvents(tid).size());
+        eventPage.setTotalPages((int)Math.ceil((float)eventPage.getTotalElements()/(float)eventPage.getPageSize()));
+        return eventPage;
+    }
+
+    @Override
+    public List<Event> findNew(Long currentTime,String status, Long tid) {
+        status="%"+status+"%";
+        return eventRepository.findNew(currentTime,tid,status);
+    }
+
+    @Override
+    public List<Event> findOld(Long lastTime, Long tid,String status, int size) {
+        status="%"+status+"%";
+        return findOld(lastTime,tid,status,size);
+    }
+
+    @Override
     public List<Task> findPage(int pageNum, int pageSize, String worker) {
         worker="%"+worker+"%";
         return taskRepository.findPage(pageSize,pageNum*pageSize-pageSize,worker);
@@ -159,7 +198,7 @@ public class TaskServiceImpl implements TaskService {
         page.setTotalElements(taskRepository.findingCountByStaffIdAndStatus(staffInfor.getStaffId(),status));
         page.setPageNum(pageNum);
         page.setPageSize(pageSize);
-        page.setTotalPages((int)Math.ceil(page.getTotalElements()/pageSize));
+        page.setTotalPages((int)Math.ceil((float)page.getTotalElements()/(float)pageSize));
         return page;
     }
 

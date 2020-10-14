@@ -6,6 +6,7 @@ import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
 import com.example.demo.entity.params.Page;
+import org.apache.poi.ss.formula.functions.Even;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,10 +41,12 @@ public interface EventService {
     public void setOperationPerson(StaffInfor staffInfor,Long eid);
     public void setTask(Task task,Long eid);
 
+
     public void setDepartment(Long did,Long eid);
     public void setChargePerson(Long staffId,Long eid);
     public void setFindPerson(Long staffId,Long eid);
     public void setDealPerson(Long staffId,Long eid);
     public void setOperationPerson(Long staffId,Long eid);
     public void setTask(Long tid,Long eid);
+    public Event findById(Long id);
 }

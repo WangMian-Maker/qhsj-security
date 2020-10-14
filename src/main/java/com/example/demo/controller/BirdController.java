@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.biology.Bird.Biology;
+import com.example.demo.entity.biology.GradeCount;
 import com.example.demo.entity.params.Page;
 import com.example.demo.service.impl.BiologyServiceImpl;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -85,5 +87,16 @@ public class BirdController {
     @ApiOperation(value = "查询图片")
     public  List<String> findImgs(@PathVariable("id") Long id){
         return birdService.findImgs(id);
+    }
+
+    @PostMapping("/findCount")
+    @ApiOperation(value = "获取各个保护等级数量,在数组中的顺序为 国家Ⅰ类 国家Ⅱ级 省级 空")
+    public List<GradeCount> findCount(){
+        List<GradeCount> tmp=new ArrayList<>();
+        tmp.add(birdService.findCountByGradeAndType(1L,"鸟类"));
+        tmp.add(birdService.findCountByGradeAndType(2L,"鸟类"));
+        tmp.add(birdService.findCountByGradeAndType(3L,"鸟类"));
+        tmp.add(birdService.findCountByGradeAndType(4L,"鸟类"));
+        return tmp;
     }
 }

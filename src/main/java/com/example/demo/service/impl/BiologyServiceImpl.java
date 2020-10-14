@@ -1,13 +1,16 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.ProtectGrade;
 import com.example.demo.entity.biology.Bird.Biology;
 import com.example.demo.entity.biology.Bird.BiologyPlan;
 import com.example.demo.entity.biology.Bird.BiologyPlanList;
+import com.example.demo.entity.biology.GradeCount;
 import com.example.demo.entity.events.Event;
 import com.example.demo.entity.params.Page;
 import com.example.demo.repository.Bird.BiologyPlanListRepository;
 import com.example.demo.repository.Bird.BiologyPlanRepository;
 import com.example.demo.repository.Bird.BiologyRepository;
+import com.example.demo.repository.ProtectGradeRepository;
 import com.example.demo.service.BiologyService;
 import net.sf.json.JSONObject;
 import org.apache.poi.util.IOUtils;
@@ -23,6 +26,8 @@ import java.util.List;
 @Service
 @Transactional
 public class BiologyServiceImpl implements BiologyService {
+    @Autowired
+    private ProtectGradeRepository protectGradeRepository;
     @Autowired
     private BiologyRepository biologyRepository;
     @Autowired
@@ -61,7 +66,7 @@ public class BiologyServiceImpl implements BiologyService {
             bid= biologyRepository.maxId()+1;
         }
         biology.setBid(bid);
-        biologyRepository.save(biology.getBid(), biology.getChineseName(), biology.getProfessorName(), biology.getProtectGrade(), biology.getColor1(), biology.getFamily(), biology.getFamilyEnglish(), biology.getColor2(),
+        biologyRepository.save(biology.getBid(), biology.getChineseName(), biology.getProfessorName(), biology.getProtectGrade().getId(), biology.getColor1(), biology.getFamily(), biology.getFamilyEnglish(), biology.getColor2(),
                 biology.getOrderVice(), biology.getOrderViceEnglish(), biology.getColor3(), biology.getInformation(), biology.getExistInformation(),biology.getBiologyType());
     }
 
@@ -98,7 +103,7 @@ public class BiologyServiceImpl implements BiologyService {
         birdPage.setPageSize(pageSize);
         birdPage.setContent(biologies);
         birdPage.setTotalElements(biologyRepository.findCount(biologyType));
-        birdPage.setTotalPages((int)Math.ceil(birdPage.getTotalElements()/pageSize));
+        birdPage.setTotalPages((int)Math.ceil((float)birdPage.getTotalElements()/(float)pageSize));
         return birdPage;
     }
 
@@ -117,7 +122,7 @@ public class BiologyServiceImpl implements BiologyService {
             bid= biologyRepository.maxId()+1;
         }
         biology.setBid(bid);
-        biologyRepository.save(biology.getBid(), biology.getChineseName(), biology.getProfessorName(), biology.getProtectGrade(), biology.getColor1(), biology.getFamily(), biology.getFamilyEnglish(), biology.getColor2(),
+        biologyRepository.save(biology.getBid(), biology.getChineseName(), biology.getProfessorName(), biology.getProtectGrade().getId(), biology.getColor1(), biology.getFamily(), biology.getFamilyEnglish(), biology.getColor2(),
                 biology.getOrderVice(), biology.getOrderViceEnglish(), biology.getColor3(), biology.getInformation(), biology.getExistInformation(),biology.getBiologyType());
         uploadImg(imgs,biology.getBid());
     }
@@ -169,6 +174,17 @@ public class BiologyServiceImpl implements BiologyService {
             urls.add("/biology/"+biology.getChineseName()+"/"+photo.listFiles()[i].getName());
         }
         return urls;
+    }
+
+    @Override
+    public GradeCount findCountByGradeAndType(Long grade, String type) {
+        String gradeStr=protectGradeRepository.findByGradeSql(grade);
+        Integer gradeInt=protectGradeRepository.findByGradeInt(grade);
+        GradeCount gradeCount=new GradeCount();
+        gradeCount.setGrade(gradeStr);
+        gradeCount.setCount(biologyRepository.findCountByGradeAndType(grade,type));
+        gradeCount.setGradeInt(gradeInt);
+        return gradeCount;
     }
 
     void dealStream(List<MultipartFile> files,String fileRoot,String type,int origin){

@@ -12,6 +12,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.sql.Time;
 
 @Data
 @Entity
@@ -25,7 +26,7 @@ public class Event {
     //private String department;
 
     @JsonSerialize(using = GeometrySerializer.class)
-    //@JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
     private Point point;
     //private String chargePerson;
     private String photoPath;
@@ -41,6 +42,7 @@ public class Event {
     //private String operationPerson;
     private String blackList;
     private String influence;
+    private Long time;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Department department;
