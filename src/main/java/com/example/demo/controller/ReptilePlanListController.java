@@ -19,7 +19,7 @@ public class ReptilePlanListController {
     @PostMapping("/save")
     @ApiOperation(value = "保存")
     public String save(@RequestBody BiologyPlanList biologyPlanList){
-        biologyPlanList.setBiologyType("哺乳动物");
+        biologyPlanList.setBiologyType("爬行动物");
         birdPlanListService.save(biologyPlanList);
         return "success";
     }
@@ -27,7 +27,7 @@ public class ReptilePlanListController {
     @PutMapping("/update")
     @ApiOperation(value = "更新")
     public String update(@RequestBody BiologyPlanList biologyPlanList){
-        biologyPlanList.setBiologyType("哺乳动物");
+        biologyPlanList.setBiologyType("爬行动物");
         birdPlanListService.update(biologyPlanList);
         return "success";
     }
@@ -36,7 +36,7 @@ public class ReptilePlanListController {
     @PostMapping("/findPage/{pageNum}/{pageSize}")
     @ApiOperation(value = "查询分页")
     public Page<BiologyPlanList> findPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
-        return birdPlanListService.findPage(pageNum,pageSize,"哺乳动物");
+        return birdPlanListService.findPage(pageNum,pageSize,"爬行动物");
     }
 
     @DeleteMapping("/deleteById/{bid}")
@@ -49,13 +49,13 @@ public class ReptilePlanListController {
     @PostMapping("/addBiologyPlan/{bid}")
     @ApiOperation(value = "添加记录")
     public String  addBirdPlan(@RequestBody BiologyPlan biologyPlan, @PathVariable("bid") Long bid){
-        biologyPlan.setBiologyType("哺乳动物");
+        biologyPlan.setBiologyType("爬行动物");
         birdPlanListService.addBirdPlan(biologyPlan,bid);
         return "success";
     }
     @PostMapping("/findBiologyPlanPage/{pageNum}/{pageSize}/{bid}")
     @ApiOperation(value = "查询记录分页")
     public Page<BiologyPlan> findBirdPlanPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize, @PathVariable("bid") Long bid){
-        return birdPlanListService.findBirdPlanPage(pageNum,pageSize,bid,"哺乳动物");
+        return birdPlanListService.findBirdPlanPage(pageNum,pageSize,bid,"爬行动物");
     }
 }

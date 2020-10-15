@@ -26,6 +26,7 @@ public interface BiologyPlanListRepository extends JpaRepository<BiologyPlanList
 //
 //    @OneToMany
 //    private List<biologyPlan> biologyPlans;
+
     @Modifying
     @Query(value = "insert into biology_plan_list (bid,time,equipment,index,biology_type) values(?1,?2,?3,?4,?5)",nativeQuery = true)
     public void save(Long bid, String time,String equipment,String index,String biologyType);

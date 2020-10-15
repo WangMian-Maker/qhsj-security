@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
@@ -53,5 +54,18 @@ public class WaterInforServiceImpl implements WaterInfoService {
     @Override
     public Long maxId() {
         return waterInforRepository.maxId()+1;
+    }
+
+    @Override
+    public com.example.demo.entity.params.Page<WaterInfor> findPageByPoint(String point, int pageNum, int pageSize) {
+        int startPoint =pageNum*pageSize-pageSize;
+        List<WaterInfor> content=waterInforRepository.findPageByPoint(point,pageSize,startPoint);
+        com.example.demo.entity.params.Page<WaterInfor> page=new com.example.demo.entity.params.Page<>();
+        page.setContent(content);
+        page.setPageNum(pageNum);
+        page.setPageSize(pageSize);
+        page.setTotalElements(waterInforRepository.findAll()==null?0:waterInforRepository.findAll().size());
+        page.setPageNum((int)Math.ceil((float)page.getTotalElements()/(float)page.getPageSize()));
+        return page;
     }
 }

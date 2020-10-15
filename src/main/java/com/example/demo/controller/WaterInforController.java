@@ -21,8 +21,8 @@ public class WaterInforController {
     }
 
     @GetMapping("/waterInfor/pageFindByPoint/{point}/{pageNum}/{pageSize}")
-    public Page<WaterInfor> findAllByPoint(@PathVariable("point") String point,@PathVariable("pageNum") int pageNum,@PathVariable("pageSize") int pageSize){
-        return waterInforService.findByPoint(point,pageNum,pageSize);
+    public com.example.demo.entity.params.Page<WaterInfor> findAllByPoint(@PathVariable("point") String point, @PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
+        return waterInforService.findPageByPoint(point,pageNum,pageSize);
     }
 
     @PostMapping("/waterInfor/save")

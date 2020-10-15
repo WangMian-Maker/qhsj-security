@@ -14,4 +14,6 @@ public interface WaterInfoService {
     public void delete(Long id);
     public List<String> findAllPoint();
     public Long maxId();
+
+    public com.example.demo.entity.params.Page<WaterInfor> findPageByPoint(String point, int pageNum, int pageSize);
 }

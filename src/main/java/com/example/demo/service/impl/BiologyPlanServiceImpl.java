@@ -31,9 +31,9 @@ public class BiologyPlanServiceImpl implements BiologyPlanService {
         List<BiologyPlan> allBiologyPlans = biologyPlanRepository.findByplanName(planName);
         List<BiologyPlan> thisOrderBiologyPlans =new ArrayList<>();
         for(int i = 0; i< allBiologyPlans.size(); i++){
-            System.out.println(allBiologyPlans.get(i).chineseName+"=======================================");
-            System.out.println(biologyRepository.findBychineseName(allBiologyPlans.get(i).chineseName,biologyType).getOrderVice()+"=======================================");
-            System.out.println(order+"=======================================");
+            //System.out.println(allBiologyPlans.get(i).chineseName+"=======================================");
+            //System.out.println(biologyRepository.findBychineseName(allBiologyPlans.get(i).chineseName,biologyType).getOrderVice()+"=======================================");
+            //System.out.println(order+"=======================================");
             if(biologyRepository.findBychineseName(allBiologyPlans.get(i).chineseName,biologyType).getOrderVice().equals(order)){
                 System.out.println(biologyRepository.findBychineseName(allBiologyPlans.get(i).chineseName,biologyType).getOrderVice()+"=======================================");
                 System.out.println(order+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
@@ -142,6 +142,7 @@ public class BiologyPlanServiceImpl implements BiologyPlanService {
 
     @Override
     public void update(BiologyPlan biologyPlan) {
+        //biologyPlan.getBiology().setBiologyType(biologyPlan.getBiologyType());
         biologyPlanRepository.save(biologyPlan);
     }
 

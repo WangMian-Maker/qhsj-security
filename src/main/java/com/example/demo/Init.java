@@ -5,6 +5,7 @@ import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.user.SysRights;
 import com.example.demo.entity.user.SysRole;
 import com.example.demo.entity.user.SysUser;
+import com.example.demo.repository.Bird.BiologyPlanListRepository;
 import com.example.demo.service.impl.*;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.apache.poi.util.IOUtils;
@@ -31,6 +32,8 @@ public class Init {
     private DepartmentServiceImpl departmentService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private BiologyPlanListRepository biologyPlanListRepository;
     @PostConstruct
     private void init(){
         if(sysRightsService.findAll()==null||sysRightsService.findAll().size()==0){
