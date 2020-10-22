@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
+import com.example.demo.entity.events.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,8 +22,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 //    private String dealSuggest;
 //    private String dealResult;
     @Modifying
-    @Query(value = "insert into task (tid,create_time,weather,recode,deal_suggest,deal_result,status) values(?1,?2,?3,?4,?5,?6,?7)",nativeQuery = true)
-    public void save(Long tid,String createTime,String weather,String recode,String dealSuggest,String dealResult,String status);
+    @Query(value = "insert into task (tid,create_time,weather,recode,deal_suggest,deal_result,status,time) values(?1,?2,?3,?4,?5,?6,?7,?8)",nativeQuery = true)
+    public void save(Long tid,String createTime,String weather,String recode,String dealSuggest,String dealResult,String status,Long time);
 
     @Query(value = "select max(t.tid) from Task t")
     public Long maxId();
@@ -52,4 +53,13 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 
     @Query(value = "select count(tid) from task where tid in (select task_tid from task_staff_workers where staff_workers_staff_id=?1) and status like ?2",nativeQuery = true)
     public int findingCountByStaffIdAndStatus(Long StaffId,String status);
+
+    @Query(value = "select * from task where status like ?3 order by tid desc limit ?2 offset ?1",nativeQuery = true)
+    public List<Task> findPageByStatus(int startPoint, int pageSize, String status);
+
+    @Query(value = "select * from task where time>?1 and status like ?2 order by tid desc",nativeQuery = true)
+    public List<Task> findNew(Long currentTime,String status);
+
+    @Query(value = "select * from task where time<?1 and status like ?2 order by tid desc limit ?3",nativeQuery = true)
+    public List<Task> findOld(Long lastTime,String status, int size);
 }

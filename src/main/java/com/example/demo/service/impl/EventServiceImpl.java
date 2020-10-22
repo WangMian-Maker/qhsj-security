@@ -96,13 +96,15 @@ public class EventServiceImpl implements EventService {
         System.out.println(eventStr);
         JSONObject jsonObject=new JSONObject(eventStr);
         Point point=null;
-        if(contain(jsonObject.getJSONObject("point").keys(),"coordinate")){
-
+        try{
             JSONObject coordinateObject=jsonObject.getJSONObject("point").getJSONObject("coordinate");
             Coordinate coordinate=new Coordinate(coordinateObject.getDouble("x"),coordinateObject.getDouble("y"),coordinateObject.getDouble("z"));
             PrecisionModel precisionModel=new PrecisionModel();
             //com.example.demo.entity.events.Point point=new Point(coordinate,precisionModel,4214);
             point=new Point(coordinate,precisionModel,4214);
+        }
+        catch (Exception e){
+
         }
         //jsonObject.set("point",JSONObject.fromBean(point));
         jsonObject.remove("point");
@@ -357,7 +359,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public String uploadEventToTask(Long taskId, String eventStr, List<MultipartFile> photoFiles, List<MultipartFile> videoFiles) {
-        Event event= (Event) JSONObject.toBean(JSONObject.fromObject(eventStr),Event.class);
+        JSONObject jsonObject=new JSONObject(eventStr);
+        Point point=null;
+        try{
+            JSONObject coordinateObject=jsonObject.getJSONObject("point").getJSONObject("coordinate");
+            Coordinate coordinate=new Coordinate(coordinateObject.getDouble("x"),coordinateObject.getDouble("y"),coordinateObject.getDouble("z"));
+            PrecisionModel precisionModel=new PrecisionModel();
+            //com.example.demo.entity.events.Point point=new Point(coordinate,precisionModel,4214);
+            point=new Point(coordinate,precisionModel,4214);
+        }
+        catch (Exception e){
+
+        }
+        //jsonObject.set("point",JSONObject.fromBean(point));
+        jsonObject.remove("point");
+        Event event= (Event) JSONObject.toBean(jsonObject,Event.class);
+        event.setPoint(point);
         String rootPath=Thread.currentThread().getContextClassLoader().getResource("").getPath()+"static/dataImage/"+event.getEid()+"/";
         String photoPathRoot=rootPath+"photo/";
         String videoPathRoot=rootPath+"video/";

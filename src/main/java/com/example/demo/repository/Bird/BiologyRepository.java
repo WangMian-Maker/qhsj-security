@@ -12,6 +12,7 @@ import java.util.List;
 public interface BiologyRepository extends JpaRepository<Biology,Long> {
 
     String findCount="select count(bid) from biology where protect_grade_id=?1 and biology_type=?2";
+    String mainPageDataSql="select * from biology order by protect_grade_id limit 20";
 //    String findCount_2="select count(bid) from biology where protect_grade='国家Ⅱ级' and biology_type=?2";
 //    String findCount_3="select count(bid) from biology where protect_grade='省级' and biology_type=?1";
 //    String findCount_4="select count(bid) from biology where protect_grade=null and biology_type=?1";
@@ -68,4 +69,7 @@ public interface BiologyRepository extends JpaRepository<Biology,Long> {
 
     @Query(value = findCount,nativeQuery = true)
     public int findCountByGradeAndType(Long gradeId,String type);
+
+    @Query(value = mainPageDataSql,nativeQuery = true)
+    public List<Biology> findMainPageData();
 }

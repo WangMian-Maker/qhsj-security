@@ -23,6 +23,8 @@ public class Task {
     private String dealSuggest;
     private String dealResult;
     private String status;
+    private Long time;
+
     @OneToOne
     private Department department;
     @ManyToOne

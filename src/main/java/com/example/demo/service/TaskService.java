@@ -26,4 +26,8 @@ public interface TaskService {
     public Page<Event> findFirstPage(String status, Long tid);
     public List<Event> findNew(Long currentTime,String status,Long tid);
     public List<Event> findOld(Long lastTime,Long tid,String status, int size);
+
+    public Page<Task> findFirstTaskPage(String status);
+    public List<Task> findTaskNew(Long currentTime,String status);
+    public List<Task> findTaskOld(Long lastTime,String status, int size);
 }

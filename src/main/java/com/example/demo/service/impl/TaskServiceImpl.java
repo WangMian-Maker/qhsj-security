@@ -47,6 +47,7 @@ public class TaskServiceImpl implements TaskService {
         else {
             task.setTid(taskRepository.maxId()+1);
         }
+        task.setTime(System.currentTimeMillis());
         String[] tmp1=request.getHeader("Authorization").split(" ");
         String token=tmp1[1];
         String userName= JwtTokenUtils.getUsername(token);
@@ -56,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
         task.setCreator(staffInfor);
         task.setStatus("待处理");
         taskRepository.save(task.getTid(),task.getCreateTime(),task.getWeather(),task.getRecode(),task.getDealSuggest(),
-                task.getDealResult(),task.getStatus());
+                task.getDealResult(),task.getStatus(),task.getTime());
         List<Long> leaderIds=new ArrayList<>();
         List<Long> workerIds=new ArrayList<>();
         List<StaffInfor> leaders=task.getLeaders();
@@ -159,7 +160,33 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Event> findOld(Long lastTime, Long tid,String status, int size) {
         status="%"+status+"%";
-        return findOld(lastTime,tid,status,size);
+        return eventRepository.findOld(lastTime,tid,status,size);
+    }
+
+    @Override
+    public Page<Task> findFirstTaskPage(String status) {
+        int pageNum=1;int pageSize=10;
+        int startPoint=pageNum*pageSize-pageSize;
+        status=status==null?"%%": "%"+status+"%";
+        Page<Task> taskPage=new Page<>();
+        taskPage.setContent(taskRepository.findPageByStatus(startPoint,pageSize,status));
+        taskPage.setPageSize(pageSize);
+        taskPage.setPageNum(pageNum);
+        taskPage.setTotalElements(taskRepository.findAll()==null?0:taskRepository.findAll().size());
+        taskPage.setTotalPages((int)Math.ceil((float)taskPage.getTotalElements()/(float)taskPage.getPageSize()));
+        return taskPage;
+    }
+
+    @Override
+    public List<Task> findTaskNew(Long currentTime, String status) {
+        status="%"+status+"%";
+        return taskRepository.findNew(currentTime,status);
+    }
+
+    @Override
+    public List<Task> findTaskOld(Long lastTime, String status, int size) {
+        status="%"+status+"%";
+        return taskRepository.findOld(lastTime,status,size);
     }
 
     @Override

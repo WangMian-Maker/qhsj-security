@@ -20,4 +20,9 @@ public class DepartmentController {
         String name=object.getString("departmentName");
         return departmentService.findByLikeDepartmentName(name);
     }
+
+    @PostMapping("/findByDepartmentName/{name}")
+    public List<Department> findByDepartmentName(@PathVariable("name") String name){
+        return departmentService.findByLikeDepartmentName(name);
+    }
 }
