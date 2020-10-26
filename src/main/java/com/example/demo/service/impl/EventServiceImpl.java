@@ -531,6 +531,34 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByeid(id);
     }
 
+    @Override
+    public List<Event> findAllEventNoTask() {
+        return eventRepository.findAllEventNoTask();
+    }
+
+    @Override
+    public Page<Event> findFirstPageNoTask(String status) {
+        status="%"+status+"%";
+        int pageSize=10; int pageNum=1;
+        int startPoint=pageNum*pageSize-pageSize;
+        List<Event> events=eventRepository.findFirstPageNoTask(pageSize,startPoint,status);
+        Page<Event> eventPage=new Page<>();
+        eventPage.setContent(events);
+        return eventPage;
+    }
+
+    @Override
+    public List<Event> findNewPageNoTask(Long currentTime, String status) {
+        status="%"+status+"%";
+        return eventRepository.findNewPageNoTask(currentTime,status);
+    }
+
+    @Override
+    public List<Event> findOldPageNoTask(Long lastTime, String status, int size) {
+        status="%"+status+"%";
+        return eventRepository.findOldPageNoTask(lastTime,status,size);
+    }
+
     boolean deleteDir(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();

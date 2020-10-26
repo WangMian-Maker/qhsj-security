@@ -114,4 +114,17 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     @Query(value = "select * from event where time<?1 and task_tid=?2 and status like ?3 order by eid desc limit ?4",nativeQuery = true)
     public List<Event> findOld(Long lastTime,Long tid,String status, int size);
+
+
+    @Query(value = "select * from event where task_tid is null",nativeQuery = true)
+    public List<Event> findAllEventNoTask();
+
+    @Query(value = "select * from event where task_tid is null and status like ?3 order by eid desc limit ?1 offset ?2",nativeQuery = true)
+    public List<Event> findFirstPageNoTask(int pageSize,int startPoint,String status);
+
+    @Query(value = "select * from event where time>?1 and task_tid is null and status like ?2 order by eid desc",nativeQuery = true)
+    public List<Event> findNewPageNoTask(Long currentTime,String status);
+
+    @Query(value = "select * from event where time<?1 and task_tid is null and status like ?2 order by eid desc limit ?3",nativeQuery = true)
+    public List<Event> findOldPageNoTask(Long lastTime,String status,int size);
 }

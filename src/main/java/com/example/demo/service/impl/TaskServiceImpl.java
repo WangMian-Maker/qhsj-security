@@ -139,7 +139,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Page<Event> findFirstPage(String status, Long tid) {
-        int pageNum=1;int pageSize=5;
+        int pageNum=1;int pageSize=10;
         int startPoint=pageNum*pageSize-pageSize;
         status=status==null?"%%": "%"+status+"%";
         Page<Event> eventPage=new Page<>();

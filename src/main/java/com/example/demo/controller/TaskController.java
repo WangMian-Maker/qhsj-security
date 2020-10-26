@@ -110,15 +110,23 @@ public class TaskController {
 
 
     @PostMapping("/findTaskNew")
-    public List<Task> findNew(Long tid,Long currentTime,String status){
+    public List<Task> findTaskNew(Long tid,Long currentTime,String status){
         return taskService.findTaskNew(currentTime,status);
     }
 
     @PostMapping("/findTaskOld")
-    public List<Task> findOld(Long tid,Long lastTime,int size,String status){
+    public List<Task> findTaskOld(Long tid,Long lastTime,int size,String status){
         return taskService.findTaskOld(lastTime,status,size);
     }
+    @PostMapping("/findNew")
+    public List<Event> findNew(Long tid,Long currentTime,String status){
+        return taskService.findNew(currentTime,status,tid);
+    }
 
+    @PostMapping("/findOld")
+    public List<Event> findOld(Long tid,Long lastTime,int size,String status){
+        return taskService.findOld(lastTime,tid,status,size);
+    }
     @PostMapping("/findFirstTaskPage")
     public Page<Task> findFirstTaskPage(String status){
 

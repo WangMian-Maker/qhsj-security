@@ -1,9 +1,17 @@
 package com.example.demo.entity;
 
+import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
+import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
 import com.example.demo.entity.events.Event;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.vividsolutions.jts.geom.LineString;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.sound.sampled.Line;
+import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.List;
 
 @Data
@@ -33,4 +41,12 @@ public class Task {
     private List<StaffInfor> leaders;
     @ManyToMany
     private List<StaffInfor> staffWorkers;
+
+    @JsonSerialize(using=GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    private LineString originLine;
+
+    @JsonSerialize(using=GeometrySerializer.class)
+    @JsonDeserialize(using = GeometryDeserializer.class)
+    private LineString realLine;
 }

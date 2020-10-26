@@ -6,6 +6,9 @@ import com.example.demo.entity.events.Event;
 import com.example.demo.entity.params.Page;
 import com.example.demo.entity.params.TaskParam1;
 import com.example.demo.service.impl.EventServiceImpl;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,4 +167,48 @@ public class EventController {
         return eventService.findById(id);
     }
 
+    @PostMapping("/findAllEventNoTask")
+    public List<Event> findAllEventNoTask(){
+        return eventService.findAllEventNoTask();
+    }
+
+    @PostMapping("/findFirstPageNoTask")
+    public Page<Event> findFirstPageNoTask(Long tid, String status){
+        return eventService.findFirstPageNoTask(status);
+    }
+
+    @PostMapping("/findNewPageNoTask")
+    public List<Event> findNewPageNoTask(Long tid,Long currentTime,String status){
+        return eventService.findNewPageNoTask(currentTime,status);
+    }
+
+    @PostMapping("/findOldPageNoTask")
+    public List<Event> findOldPageNoTask(Long tid,Long lastTime,String status,int size){
+        return eventService.findOldPageNoTask(lastTime,status,size);
+    }
+
+    @PutMapping("/updateWithMedia")
+    public String updateWithMedia(@RequestPart("event") String eventStr,@RequestPart("photoFile")List<MultipartFile> photoFiles,
+                                  @RequestPart("videoFile")List<MultipartFile> videoFiles){
+        JSONObject jsonObject=new JSONObject(eventStr);
+        Point point=null;
+        try{
+            JSONObject coordinateObject=jsonObject.getJSONObject("point").getJSONObject("coordinate");
+            Coordinate coordinate=new Coordinate(coordinateObject.getDouble("x"),coordinateObject.getDouble("y"),coordinateObject.getDouble("z"));
+            PrecisionModel precisionModel=new PrecisionModel();
+            //com.example.demo.entity.events.Point point=new Point(coordinate,precisionModel,4214);
+            point=new Point(coordinate,precisionModel,4214);
+        }
+        catch (Exception e){
+
+        }
+        //jsonObject.set("point",JSONObject.fromBean(point));
+        jsonObject.remove("point");
+        Event event= (Event) JSONObject.toBean(jsonObject,Event.class);
+        event.setPoint(point);
+        eventService.update(event);
+        eventService.addPhotoForEvent(event.getEid(),photoFiles);
+        eventService.addVideoForEvent(event.getEid(),videoFiles);
+        return "success";
+    }
 }

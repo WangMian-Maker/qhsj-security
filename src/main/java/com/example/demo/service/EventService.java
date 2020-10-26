@@ -49,4 +49,9 @@ public interface EventService {
     public void setOperationPerson(Long staffId,Long eid);
     public void setTask(Long tid,Long eid);
     public Event findById(Long id);
+
+    public List<Event> findAllEventNoTask();
+    public Page<Event> findFirstPageNoTask(String status);
+    public List<Event> findNewPageNoTask(Long currentTime,String status);
+    public List<Event> findOldPageNoTask(Long lastTime,String status,int size);
 }
