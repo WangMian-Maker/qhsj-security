@@ -22,6 +22,7 @@ public class TaskController {
     private HttpServletRequest request;
     @PostMapping("/create")
     public String create(@RequestBody Task task){
+        System.out.println("task:"+task.getOriginLine().getCoordinates().length);
         taskService.createTask(task);
         return "success";
     }

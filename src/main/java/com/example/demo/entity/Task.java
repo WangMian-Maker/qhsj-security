@@ -42,11 +42,11 @@ public class Task {
     @ManyToMany
     private List<StaffInfor> staffWorkers;
 
-    @JsonSerialize(using=GeometrySerializer.class)
-    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonSerialize(using= com.example.demo.entity.events.GeometrySerializer.class)
+    @JsonDeserialize(using = com.example.demo.entity.events.GeometryDeserializer.class)
     private LineString originLine;
 
-    @JsonSerialize(using=GeometrySerializer.class)
-    @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonSerialize(using= com.example.demo.entity.events.GeometrySerializer.class)
+    @JsonDeserialize(using = com.example.demo.entity.events.GeometryDeserializer.class)
     private LineString realLine;
 }

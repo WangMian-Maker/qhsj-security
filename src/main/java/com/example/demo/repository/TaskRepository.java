@@ -3,6 +3,7 @@ package com.example.demo.repository;
 import com.example.demo.entity.StaffInfor;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.events.Event;
+import com.vividsolutions.jts.geom.LineString;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,8 +23,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 //    private String dealSuggest;
 //    private String dealResult;
     @Modifying
-    @Query(value = "insert into task (tid,create_time,weather,recode,deal_suggest,deal_result,status,time) values(?1,?2,?3,?4,?5,?6,?7,?8)",nativeQuery = true)
-    public void save(Long tid,String createTime,String weather,String recode,String dealSuggest,String dealResult,String status,Long time);
+    @Query(value = "insert into task (tid,create_time,weather,recode,deal_suggest,deal_result,status,time,origin_line,real_line) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)",nativeQuery = true)
+    public void save(Long tid, String createTime, String weather, String recode, String dealSuggest, String dealResult, String status, Long time, LineString originLine,LineString realLine);
 
     @Query(value = "select max(t.tid) from Task t")
     public Long maxId();

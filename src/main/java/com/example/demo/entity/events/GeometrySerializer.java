@@ -128,7 +128,7 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
 
     private void writeLineStringCoords(JsonGenerator jgen, LineString ring) throws IOException {
         jgen.writeStartArray();
-
+        System.out.println("count:"+ring.getNumPoints());
         for(int i = 0; i != ring.getNumPoints(); ++i) {
             Point p = ring.getPointN(i);
             this.writePointCoords(jgen, p);
@@ -140,7 +140,7 @@ public class GeometrySerializer extends JsonSerializer<Geometry> {
     private void writeLineString(JsonGenerator jgen, LineString lineString) throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "LineString");
-        jgen.writeFieldName("coordinate");
+        jgen.writeFieldName("coordinates");
         this.writeLineStringCoords(jgen, lineString);
         jgen.writeEndObject();
     }

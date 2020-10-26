@@ -57,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
         task.setCreator(staffInfor);
         task.setStatus("待处理");
         taskRepository.save(task.getTid(),task.getCreateTime(),task.getWeather(),task.getRecode(),task.getDealSuggest(),
-                task.getDealResult(),task.getStatus(),task.getTime());
+                task.getDealResult(),task.getStatus(),task.getTime(),task.getOriginLine(),task.getRealLine());
         List<Long> leaderIds=new ArrayList<>();
         List<Long> workerIds=new ArrayList<>();
         List<StaffInfor> leaders=task.getLeaders();
