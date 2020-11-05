@@ -21,4 +21,7 @@ public class Camera {
     private String account;
     private String password;
     private String rtspUrl;
+    private String rtmpUrl;
+    private String httpUrl;
+    private String cameraName;
 }

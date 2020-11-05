@@ -20,9 +20,9 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import net.sf.json.JSONObject;
 import org.apache.poi.ss.formula.functions.Even;
 import org.apache.poi.util.IOUtils;
-import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -650,14 +650,16 @@ public class EventServiceImpl implements EventService {
             }
             i++;
         }
-        opencv_core.IplImage img = f.image;
-        int owidth = img.width();
-        int oheight = img.height();
+        //opencv_core.IplImage img = f.image;
+        int owidth = f.imageWidth;
+        int oheight = f.imageHeight;
         // 对截取的帧进行等比例缩放
         int width = 800;
         int height = (int) (((double) width / owidth) * oheight);
+        Java2DFrameConverter converter=new Java2DFrameConverter();
+        BufferedImage fetchImage=converter.getBufferedImage(f);
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        bi.getGraphics().drawImage(f.image.getBufferedImage().getScaledInstance(width, height, Image.SCALE_SMOOTH),
+        bi.getGraphics().drawImage(fetchImage.getScaledInstance(width, height, Image.SCALE_SMOOTH),
                 0, 0, null);
         ImageIO.write(bi, "jpg", targetFile);
         //ff.flush();

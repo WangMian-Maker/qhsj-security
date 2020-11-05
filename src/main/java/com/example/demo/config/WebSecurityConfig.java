@@ -53,6 +53,7 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()   // login页面不需要认证就可以进入
                 .antMatchers("/myLogin").permitAll()
                 .antMatchers("/dataImage").permitAll()
+                .antMatchers("/live").permitAll()
                 .antMatchers("/data/**").access("@rbacService.hasPermission(request,authentication)");
     }
 

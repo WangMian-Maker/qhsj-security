@@ -36,6 +36,7 @@ public class Init {
     private BiologyPlanListRepository biologyPlanListRepository;
     @PostConstruct
     private void init(){
+
         if(sysRightsService.findAll()==null||sysRightsService.findAll().size()==0){
             SysRights rights=new SysRights();
             rights.setMenuUrl("entryData");

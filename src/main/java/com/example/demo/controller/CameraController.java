@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/data/camera")
 @RestController
 public class CameraController {
@@ -41,5 +43,11 @@ public class CameraController {
     @ApiOperation(value = "分页查询所有")
     public Page<Camera> findAllPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize){
         return cameraService.findPage(pageNum,pageSize);
+    }
+
+    @PostMapping("/findAll")
+    @ApiOperation(value = "查询所有")
+    public List<Camera> findAll(){
+        return cameraService.findAll();
     }
 }
